@@ -1,6 +1,22 @@
-Project template for cross-platform C library.
+Common C library.
 
-We will use Conan to install external dependencies and generate the files that CMake needs to find this library and build our project.
+We use Conan to install external dependencies
+and generate the files that CMake needs to find this library and build our projects.
+
+Install conan CLI tool:
+```bash
+sudo apt install pipx
+pipx install conan
+conan --version
+```
+
+Besides the conanfile.txt, we need a Conan profile to build our project.
+that's single time for the system (not for per project).
+You can check it later: /home/alex/.conan2/profiles/default.
+```bash
+conan profile detect --force
+conan profile path default
+```
 
 Create build/ subfolder:
 ```bash

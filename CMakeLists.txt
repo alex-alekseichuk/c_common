@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
 project(common C)
 
-SET(SRC
-    src/main.c
+# Option to enable/disable tests
+option(BUILD_TESTS "Build tests" ON)
+
+file(GLOB SRC
+    src/allocator.c
+    # src/main.c  # Not part of library
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRC})
@@ -13,6 +17,11 @@ target_include_directories(common PUBLIC
 
 # Define COMMON_BUILD_DLL when building the DLL
 target_compile_definitions(${PROJECT_NAME} PRIVATE COMMON_BUILD_DLL)
+
+# Build tests if enabled
+if(BUILD_TESTS)
+    add_subdirectory(test)
+endif()
 
 # Optional: Install target (headers + library)
 install(TARGETS common
