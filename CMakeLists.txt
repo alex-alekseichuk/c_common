@@ -6,7 +6,6 @@ option(BUILD_TESTS "Build tests" ON)
 
 file(GLOB SRC
     src/allocator.c
-    # src/main.c  # Not part of library
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRC})

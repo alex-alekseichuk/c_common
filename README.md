@@ -36,5 +36,4 @@ cmake .. -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmak
 cmake --build . --config Release
 ```
 
-There is example of the executable application project in the example/ subfolder.
-See example/README.md.
+There are tests on test/ subdirectorty.
