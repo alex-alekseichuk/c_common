@@ -16,12 +16,12 @@ file(GLOB SRC
 
 add_library(${PROJECT_NAME} SHARED ${SRC})
 
+# Define COMMON_BUILD_DLL when building the DLL
+target_compile_definitions(${PROJECT_NAME} PRIVATE COMMON_BUILD_DLL PUBLIC COMMON_SHARED)
+
 target_include_directories(common PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
-
-# Define COMMON_BUILD_DLL when building the DLL
-target_compile_definitions(${PROJECT_NAME} PRIVATE COMMON_BUILD_DLL)
 
 # Build tests if enabled
 if(BUILD_TESTS)
@@ -35,7 +35,6 @@ install(TARGETS common
     LIBRARY DESTINATION lib  # For SHARED lib
 )
 install(DIRECTORY include/ DESTINATION include)
-
 
 # Auto-symlink to project root
 if(CMAKE_EXPORT_COMPILE_COMMANDS)

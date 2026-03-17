@@ -8,6 +8,17 @@ file(GLOB TEST_SOURCES
     src/*.c
 )
 
+function(copy_dll target dll_target)
+    if(WIN32)
+        add_custom_command(TARGET ${target} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_FILE:${dll_target}>
+                $<TARGET_FILE_DIR:${target}>
+            COMMENT "Copying ${dll_target}.dll to ${target} directory"
+        )
+    endif()
+endfunction()
+
 foreach(TEST_FILE ${TEST_SOURCES})
     # get test name without path and extension
     get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
@@ -17,10 +28,17 @@ foreach(TEST_FILE ${TEST_SOURCES})
 
     # link unity and project library
     target_link_libraries(${TEST_NAME}
-        PUBLIC
+        PRIVATE
             unity::unity
             ${PROJECT_NAME}
     )
+
+    # add_custom_command(TARGET ${TEST_NAME} POST_BUILD
+    #     COMMAND ${TEST_NAME}_copy -E copy_if_different
+    #         $<TARGET_FILE:common>
+    #         $<TARGET_FILE_DIR:${TEST_NAME}>
+    # )
+    copy_dll(${TEST_NAME} common)
 
     # register test in CTest
     add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})

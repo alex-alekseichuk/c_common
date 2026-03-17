@@ -1,8 +1,9 @@
 #pragma once
 
-#include "common/allocator.h"
+#include <common/common.h>
+#include <common/allocator.h>
 
-extern Allocator make_malloc_allocator();
+COMMON_API Allocator make_malloc_allocator();
 
 /*
 #include "allocator.h"

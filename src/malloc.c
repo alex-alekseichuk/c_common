@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "common/allocator.h"
+#include <common/malloc.h>
 
 void* malloc_alloc(void *ctx, size_t size) {
     (void)ctx;

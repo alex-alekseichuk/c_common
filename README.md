@@ -42,25 +42,23 @@ ctest
 
 Add `-DBUILD_TESTS=OFF` to avoid building tests.
 
+To run tests in parallel:
+```bash
+ctest -j 4
+```
 
 Build on windows:
 
-```bash
-cmake .. -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake"
-cmake --build . --config Debug
-```
-
 Debug:
 ```bash
+cmake .. -G "Visual Studio 18 2026" -DCMAKE_BUILD_TYPE=DEBUG
 cmake --build . --config Debug
-```
-Release:
-```bash
-cmake --build . --config Release
+ctest -C Debug
 ```
 
-There are tests in test/ subdirectorty.
-Run test:
+Release:
 ```bash
-ctest --test-dir test
+cmake .. -G "Visual Studio 18 2026" -DCMAKE_BUILD_TYPE=RELEASE
+cmake --build . --config Release
+ctest -C Release
 ```

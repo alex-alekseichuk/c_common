@@ -8,12 +8,14 @@
     #define _END_EXTERN_C
 #endif
 
-#if defined(_WIN32) && defined(COMMON_BUILD_DLL)
-    #define COMMON_API __declspec(dllexport) extern
-#elif defined(_WIN32)
-    #define COMMON_API __declspec(dllimport) extern
+#if defined(_WIN32) && defined(COMMON_SHARED)
+  #if defined(COMMON_BUILD_DLL)
+    #define COMMON_API __declspec(dllexport)
+  #else
+    #define COMMON_API __declspec(dllimport)
+  #endif
 #else
-    #define COMMON_API extern
+  #define COMMON_API
 #endif
 
 /*
