@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stddef.h>
-#include "config.h"
-#include "allocator.h"
+#include "common/common.h"
+#include "common/allocator.h"
 /*
 | Task                       | Solution        |
 | -------------------------- | --------------- |

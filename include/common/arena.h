@@ -1,7 +1,7 @@
 #pragma once
 
-#include "config.h"
-#include "allocator.h"
+#include "common/common.h"
+#include "common/allocator.h"
 
 COMMON_API Allocator make_arena_allocator(size_t size);
 COMMON_API void free_arena_allocator(Allocator *alloc);

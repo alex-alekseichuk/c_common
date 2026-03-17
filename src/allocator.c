@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include "allocator.h"
+#include <common/allocator.h>
 
 char* alloc_printf(Allocator *a, const char *fmt, ...) {
     va_list ap;

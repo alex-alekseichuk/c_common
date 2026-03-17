@@ -18,22 +18,49 @@ conan profile detect --force
 conan profile path default
 ```
 
-Create build/ subfolder:
+Debug:
+
 ```bash
-conan install . --output-folder=build --build=missing
-cd build
+mkdir debug
+cd debug
+conan install .. --output-folder . --build=missing -s build_type=Debug
+cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=DEBUG
+cmake --build .
+ctest
 ```
 
-Build on linux:
+Release:
+
 ```bash
-cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake" -DCMAKE_BUILD_TYPE=Release
+mkdir release
+cd release
+conan install .. --output-folder . --build=missing -s build_type=Release
+cmake .. -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=RELEASE
 cmake --build .
+ctest
 ```
+
+Add `-DBUILD_TESTS=OFF` to avoid building tests.
+
 
 Build on windows:
+
 ```bash
 cmake .. -G "Visual Studio 17 2022" -DCMAKE_TOOLCHAIN_FILE="conan_toolchain.cmake"
+cmake --build . --config Debug
+```
+
+Debug:
+```bash
+cmake --build . --config Debug
+```
+Release:
+```bash
 cmake --build . --config Release
 ```
 
-There are tests on test/ subdirectorty.
+There are tests in test/ subdirectorty.
+Run test:
+```bash
+ctest --test-dir test
+```

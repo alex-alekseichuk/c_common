@@ -8,24 +8,20 @@ file(GLOB TEST_SOURCES
     src/*.c
 )
 
-# Create test executable
-add_executable(${PROJECT_NAME}_tests ${TEST_SOURCES})
+foreach(TEST_FILE ${TEST_SOURCES})
+    # get test name without path and extension
+    get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
 
-# Link with Unity and our library
-target_link_libraries(${PROJECT_NAME}_tests
-    PRIVATE
-        unity::unity
-        common
-)
+    # create executable
+    add_executable(${TEST_NAME} ${TEST_FILE})
 
-# Include directories
-target_include_directories(${PROJECT_NAME}_tests
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../include
-)
+    # link unity and project library
+    target_link_libraries(${TEST_NAME}
+        PUBLIC
+            unity::unity
+            ${PROJECT_NAME}
+    )
 
-# Enable testing
-enable_testing()
-
-# Add test command
-add_test(NAME ${PROJECT_NAME}_unit_tests COMMAND ${PROJECT_NAME}_tests)
+    # register test in CTest
+    add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+endforeach()

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "allocator.h"
+#include "common/allocator.h"
 
-extern Allocator malloc_allocator_make(void);
+extern Allocator make_malloc_allocator();
 
 /*
 #include "allocator.h"
@@ -22,7 +22,7 @@ Node* list_push(Allocator *a, Node *head, int value) {
     return n;
 }
 
-Allocator a = malloc_allocator_make();
+Allocator a = make_malloc_allocator();
 
 Node *list = NULL;
 list = list_push(&a, list, 1);

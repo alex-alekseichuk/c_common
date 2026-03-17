@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include <stdarg.h>
-#include "allocator.h"
+#include "common/allocator.h"
 
 size_t utf8_strlen(const char *s) {
     size_t count = 0;

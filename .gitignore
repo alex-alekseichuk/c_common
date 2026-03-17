@@ -30,3 +30,9 @@ unity-release-x86_64-debug-config-version.cmake
 unity-release-x86_64-debug-target-config-version.cmake
 unity-release-x86_64-debug-target-data-version.cmake
 unity-release-x86_64-debug-target-config-version.cmake
+test/Testing
+Testing
+compile_commands.json
+.cache
+debug
+release

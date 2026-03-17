@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "allocator.h"
+#include "common/allocator.h"
 
 typedef struct Arena {
     uint8_t *base;

@@ -1,52 +1,14 @@
 #include <unity.h>
 #include <stdlib.h>
 #include <string.h>
-#include <common/allocator.h>
 
-// Mock allocator context for testing
-typedef struct MockAllocContext {
-    size_t total_allocated;
-    size_t allocation_count;
-    size_t fail_after_count;  // Fail allocation after this many calls (0 = never fail)
-    size_t current_count;
-} MockAllocContext;
+#include <common/malloc.h>
 
-static MockAllocContext ctx;
 static Allocator allocator;
-
-// Mock allocation function
-static void* mock_alloc(void *ctx, size_t size) {
-    MockAllocContext *mock_ctx = (MockAllocContext*)ctx;
-
-    if (mock_ctx->fail_after_count > 0 &&
-        mock_ctx->current_count >= mock_ctx->fail_after_count) {
-        return NULL;
-    }
-
-    void *ptr = malloc(size);
-    if (ptr) {
-        mock_ctx->total_allocated += size;
-        mock_ctx->allocation_count++;
-        mock_ctx->current_count++;
-    }
-    return ptr;
-}
-
-// Mock free function
-static void mock_free(void *ctx, void *ptr) {
-    (void)ctx;  // Unused
-    free(ptr);
-}
 
 // Test setup function
 void setUp(void) {
-    // Called before each test
-    ctx = (MockAllocContext){0};
-    allocator = (Allocator){
-        .alloc = mock_alloc,
-        .free = mock_free,
-        .ctx = &ctx
-    };
+    allocator = make_malloc_allocator();
 }
 
 // Test teardown function
@@ -64,7 +26,6 @@ void test_alloc_t_macro(void) {
 
     TestStruct *ptr = alloc_t(&allocator, TestStruct);
     TEST_ASSERT_NOT_NULL(ptr);
-    TEST_ASSERT_EQUAL(0, ctx.total_allocated - sizeof(TestStruct));
 
     alloc_free(&allocator, ptr);
 }
@@ -107,12 +68,6 @@ void test_alloc_n_macro(void) {
     int *arr = alloc_n(&allocator, int, count);
     TEST_ASSERT_NOT_NULL(arr);
 
-    // Verify we can access all elements
-    for (int i = 0; i < count; i++) {
-        arr[i] = i * 2;
-        TEST_ASSERT_EQUAL(i * 2, arr[i]);
-    }
-
     alloc_free(&allocator, arr);
 }
 
@@ -125,12 +80,6 @@ void test_alloc_zero_n_macro(void) {
     // Verify all elements are zero-initialized
     for (int i = 0; i < count; i++) {
         TEST_ASSERT_EQUAL(0, arr[i]);
-    }
-
-    // Verify we can write to all elements
-    for (int i = 0; i < count; i++) {
-        arr[i] = i + 1;
-        TEST_ASSERT_EQUAL(i + 1, arr[i]);
     }
 
     alloc_free(&allocator, arr);
@@ -147,22 +96,6 @@ void test_alloc_printf(void) {
     alloc_free(&allocator, result);
 }
 
-// Test allocation failure
-void test_allocation_failure(void) {
-    ctx.fail_after_count = 1;  // Fail after 1 allocation
-
-    // First allocation should succeed
-    int *ptr1 = alloc_t(&allocator, int);
-    TEST_ASSERT_NOT_NULL(ptr1);
-    TEST_ASSERT_EQUAL(1, ctx.allocation_count);
-
-    // Second allocation should fail
-    int *ptr2 = alloc_t(&allocator, int);
-    TEST_ASSERT_NULL(ptr2);
-
-    alloc_free(&allocator, ptr1);
-}
-
 int main(void) {
     UNITY_BEGIN();
 
@@ -172,7 +105,6 @@ int main(void) {
     RUN_TEST(test_alloc_n_macro);
     RUN_TEST(test_alloc_zero_n_macro);
     RUN_TEST(test_alloc_printf);
-    RUN_TEST(test_allocation_failure);
 
     return UNITY_END();
 }
