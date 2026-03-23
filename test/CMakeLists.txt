@@ -4,8 +4,8 @@ cmake_minimum_required(VERSION 3.15)
 find_package(unity REQUIRED)
 
 # Collect test source files
-file(GLOB TEST_SOURCES
-    src/*.c
+file(GLOB TEST_FILES
+    src/test_*.c
 )
 
 function(copy_dll target dll_target)
@@ -19,12 +19,12 @@ function(copy_dll target dll_target)
     endif()
 endfunction()
 
-foreach(TEST_FILE ${TEST_SOURCES})
+foreach(TEST_FILE ${TEST_FILES})
     # get test name without path and extension
     get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
 
     # create executable
-    add_executable(${TEST_NAME} ${TEST_FILE})
+    add_executable(${TEST_NAME} ${TEST_FILE} src/allocator.c)
 
     # link unity and project library
     target_link_libraries(${TEST_NAME}

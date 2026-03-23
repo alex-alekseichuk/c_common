@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 project(common C)
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
 # Option to enable/disable tests
@@ -12,9 +15,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 file(GLOB SRC
     src/allocator.c
     src/malloc.c
+    src/arena.c
+    src/array.c
+    src/list.c
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRC})
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+    $<$<C_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion>
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion>
+    $<$<C_COMPILER_ID:MSVC>:/W4>
+    $<$<CXX_COMPILER_ID:MSVC>:/W4>
+)
 
 # Define COMMON_BUILD_DLL when building the DLL
 target_compile_definitions(${PROJECT_NAME} PRIVATE COMMON_BUILD_DLL PUBLIC COMMON_SHARED)

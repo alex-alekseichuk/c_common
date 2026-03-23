@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stddef.h>
-#include <string.h>
 #include "common/common.h"
+#include "common/int.h"
 
 _BEGIN_EXTERN_C
 

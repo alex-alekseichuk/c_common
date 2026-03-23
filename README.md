@@ -62,3 +62,10 @@ cmake .. -G "Visual Studio 18 2026" -DCMAKE_BUILD_TYPE=RELEASE
 cmake --build . --config Release
 ctest -C Release
 ```
+
+
+TODO:
+
+- make Array resizeable
+- implemen Stack by Array and List
+- implement DList

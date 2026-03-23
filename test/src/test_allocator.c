@@ -38,9 +38,7 @@ static void mock_free(void *ctx, void *ptr) {
     free(ptr);
 }
 
-// Test setup function
 void setUp(void) {
-    // Called before each test
     ctx = (MockAllocContext){0};
     allocator = (Allocator){
         .alloc = mock_alloc,
@@ -49,9 +47,7 @@ void setUp(void) {
     };
 }
 
-// Test teardown function
 void tearDown(void) {
-    // Called after each test
 }
 
 // Test basic allocation
@@ -62,11 +58,11 @@ void test_alloc_t_macro(void) {
         char y;
     } TestStruct;
 
-    TestStruct *ptr = alloc_t(&allocator, TestStruct);
+    TestStruct *ptr = ALLOC_T(&allocator, TestStruct);
     TEST_ASSERT_NOT_NULL(ptr);
     TEST_ASSERT_EQUAL(0, ctx.total_allocated - sizeof(TestStruct));
 
-    alloc_free(&allocator, ptr);
+    FREE(&allocator, ptr);
 }
 
 // Test zero allocation
@@ -81,7 +77,7 @@ void test_alloc_zero_macro(void) {
         TEST_ASSERT_EQUAL(0, bytes[i]);
     }
 
-    alloc_free(&allocator, ptr);
+    FREE(&allocator, ptr);
 }
 
 // Test zero allocation with types
@@ -92,19 +88,19 @@ void test_alloc_zero_t_macro(void) {
         double z;
     } TestStruct;
 
-    TestStruct *ptr = alloc_zero_t(&allocator, TestStruct);
+    TestStruct *ptr = ALLOC_ZERO_T(&allocator, TestStruct);
     TEST_ASSERT_NOT_NULL(ptr);
     TEST_ASSERT_EQUAL(0, ptr->x);
     TEST_ASSERT_EQUAL(0, ptr->y);
     TEST_ASSERT_EQUAL(0.0, ptr->z);
 
-    alloc_free(&allocator, ptr);
+    FREE(&allocator, ptr);
 }
 
 // Test array allocation
 void test_alloc_n_macro(void) {
     const int count = 10;
-    int *arr = alloc_n(&allocator, int, count);
+    int *arr = ALLOC_N(&allocator, int, count);
     TEST_ASSERT_NOT_NULL(arr);
 
     // Verify we can access all elements
@@ -113,13 +109,13 @@ void test_alloc_n_macro(void) {
         TEST_ASSERT_EQUAL(i * 2, arr[i]);
     }
 
-    alloc_free(&allocator, arr);
+    FREE(&allocator, arr);
 }
 
 // Test zero array allocation
 void test_alloc_zero_n_macro(void) {
     const int count = 16;
-    int *arr = alloc_zero_n(&allocator, int, count);
+    int *arr = ALLOC_ZERO_N(&allocator, int, count);
     TEST_ASSERT_NOT_NULL(arr);
 
     // Verify all elements are zero-initialized
@@ -133,7 +129,7 @@ void test_alloc_zero_n_macro(void) {
         TEST_ASSERT_EQUAL(i + 1, arr[i]);
     }
 
-    alloc_free(&allocator, arr);
+    FREE(&allocator, arr);
 }
 
 // Test alloc_printf function
@@ -144,7 +140,7 @@ void test_alloc_printf(void) {
     TEST_ASSERT_NOT_NULL(result);
     TEST_ASSERT_EQUAL_STRING(expected, result);
 
-    alloc_free(&allocator, result);
+    FREE(&allocator, result);
 }
 
 // Test allocation failure
@@ -152,15 +148,15 @@ void test_allocation_failure(void) {
     ctx.fail_after_count = 1;  // Fail after 1 allocation
 
     // First allocation should succeed
-    int *ptr1 = alloc_t(&allocator, int);
+    int *ptr1 = ALLOC_T(&allocator, int);
     TEST_ASSERT_NOT_NULL(ptr1);
     TEST_ASSERT_EQUAL(1, ctx.allocation_count);
 
     // Second allocation should fail
-    int *ptr2 = alloc_t(&allocator, int);
+    int *ptr2 = ALLOC_T(&allocator, int);
     TEST_ASSERT_NULL(ptr2);
 
-    alloc_free(&allocator, ptr1);
+    FREE(&allocator, ptr1);
 }
 
 int main(void) {

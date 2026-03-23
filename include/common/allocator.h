@@ -1,51 +1,69 @@
 #pragma once
 
 #include <stddef.h>
+#include <stdalign.h>
 #include <string.h>
-#include <common/common.h>
+#include "common/common.h"
 
 _BEGIN_EXTERN_C
 
+extern const size_t SIZE_T; // 8
+extern const size_t ALIGN; // 32
+
+#define BUFFER(NAME, T, SIZE) alignas(max_align_t) T NAME[(SIZE)];
+
 typedef void* (*alloc_fn)(void *ctx, size_t size);
-typedef void  (*free_fn)(void *ctx, void *ptr);
+typedef void* (*realloc_fn)(void *ctx, void *ptr, size_t size);
+typedef void (*free_fn)(void *ctx, void *ptr);
+typedef size_t (*sizeof_fn)(void *ctx, void *ptr);
 
 // allocator is an entity that can allocate and free memory
 // it has abstract context implementation
 typedef struct Allocator {
     alloc_fn alloc;
+    realloc_fn realloc;
     free_fn  free;
+    sizeof_fn _sizeof;
     void    *ctx;
 } Allocator;
 
+extern Allocator dummy_allocator;
+
+#define ALLOC(a, size) ((a)->alloc((a)->ctx, (size)))
+
 // allocate a struct
-// Node *n = alloc_t(&a, Node);
-#define alloc_t(a, T) ((T*)(a)->alloc((a)->ctx, sizeof(T)))
+// Node *n = ALLOC_T(&a, Node);
+#define ALLOC_T(a, T) ((T*)(a)->alloc((a)->ctx, sizeof(T)))
 
 // allocate an array of n elements
-#define alloc_n(a, T, n) ((T*)(a)->alloc((a)->ctx, sizeof(T) * (n)))
+#define ALLOC_N(a, T, n) ((T*)(a)->alloc((a)->ctx, sizeof(T) * (n)))
 
-static inline void*
-alloc_zero_impl(Allocator *a, size_t size) {
+static inline void* alloc_zero(Allocator *a, size_t size) {
     void *p = a->alloc(a->ctx, size);
     if (p) memset(p, 0, size);
     return p;
 }
 
 // allocate severtal bytes and zero the memory
-#define alloc_zero(a, size) alloc_zero_impl((a), (size))
+#define ALLOC_ZERO(a, size) alloc_zero((a), (size))
 
 // allocate a struct and zero the memory
-// Node *n = alloc_zero_t(&alloc, Node);
-#define alloc_zero_t(a, T) \
+// Node *n = ALLOC_ZERO_T(&alloc, Node);
+#define ALLOC_ZERO_T(a, T) \
     ((T*)alloc_zero((a), sizeof(T)))
 
 // allocate an array of n elements and zero the memory
-// int *arr = alloc_zero_n(&alloc, int, 128);
-#define alloc_zero_n(a, T, n) \
+// int *arr = ALLOC_ZERO_N(&alloc, int, 128);
+#define ALLOC_ZERO_N(a, T, n) \
     ((T*)alloc_zero((a), sizeof(T) * (n)))
 
+#define REALLOC(a, ptr, size) (a)->realloc((a)->ctx, (ptr), (size))
+#define REALLOC_N(a, T, n) ((T*)(a)->realloc((a)->ctx, (ptr), sizeof(T) * (n)))
+
 // free memory
-#define alloc_free(a, ptr) (a)->free((a)->ctx, (ptr))
+#define FREE(a, ptr) (a)->free((a)->ctx, (ptr))
+
+#define SIZEOF(a, ptr) (a)->_sizeof((a)->ctx, (ptr))
 
 // allocate a string and format it
 COMMON_API char* alloc_printf(Allocator *a, const char *fmt, ...);

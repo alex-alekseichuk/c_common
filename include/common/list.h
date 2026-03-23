@@ -1,65 +1,74 @@
 #pragma once
 
 #include <stddef.h>
+#include "common/allocator.h"
+#include "common/common.h"
 
-#define LIST(Typename)                                                     \
-typedef struct Node_##Typename {                                            \
-    Typename value;                                                          \
-    struct Node_##Typename *next;                                            \
-} Node_##Typename;                                                           \
+_BEGIN_EXTERN_C
+
+typedef struct ListNode {
+    struct ListNode *next;
+} ListNode;
+
+typedef struct List {
+    Allocator *alloc;
+    ListNode *tail;
+} List;
+
+COMMON_API void list_free(void *list);
+COMMON_API void list_insert_head(void *list, void *new_node);
+COMMON_API void list_append(void *list, void *new_node, void *after_node);
+COMMON_API void list_free_head(void *list);
+COMMON_API void list_reverse(void *list);
+
+#define DEFINE_LIST(T)                                                       \
+typedef struct T##Node {                                                     \
+    struct T##Node *next;                                                    \
+    T value;                                                                 \
+} T##Node;                                                                   \
                                                                              \
-static Node_##Typename* node_##Typename##_create(Allocator *A, Typename val) { \
-    Node_##Typename *n = (Node_##Typename*)A->alloc(A->ctx, sizeof(Node_##Typename)); \
-    if (!n) return NULL;                                                     \
-    n->value = val;                                                          \
-    n->next = NULL;                                                          \
-    return n;                                                                \
+typedef struct T##List {                                                     \
+    Allocator *alloc;                                                        \
+    T##Node *tail;                                                           \
+} T##List;                                                                   \
+                                                                             \
+COMMON_API T##List make_##T##List(Allocator *alloc);                         \
+COMMON_API int T##List##_insert_head(T##List *list, T value);                \
+COMMON_API int T##List##_append(T##List *list, T value, T##Node *after_node);  \
+COMMON_API T T##List##_remove_head(T##List *list);                           \
+COMMON_API T T##List##_tail(T##List *list);                                  \
+
+#define IMPL_LIST(T)                                                         \
+T##List make_##T##List(Allocator *alloc) {                                   \
+    return (T##List){.alloc=alloc,.tail=NULL};                               \
 }                                                                            \
                                                                              \
-static Node_##Typename* list_##Typename##_push_front(Allocator *A, Node_##Typename* head, Typename val) { \
-    Node_##Typename *n = node_##Typename##_create(A, val);                   \
-    if (!n) return head;                                                     \
-    n->next = head;                                                          \
-    return n;                                                                \
+int T##List##_insert_head(T##List *list, T value) {                          \
+    T##Node *new_node = ALLOC_T(list->alloc, T##Node);                       \
+    if (!new_node) return 0;                                                 \
+    new_node->value = value;                                                 \
+    list_insert_head(list, new_node);                                        \
+    return 1;                                                                \
 }                                                                            \
                                                                              \
-static Node_##Typename* list_##Typename##_push_back(Allocator *A, Node_##Typename* head, Typename val) { \
-    Node_##Typename *n = node_##Typename##_create(A, val);                   \
-    if (!n) return head;                                                     \
-    if (!head) return n;                                                     \
-    Node_##Typename *cur = head;                                             \
-    while (cur->next) cur = cur->next;                                       \
-    cur->next = n;                                                           \
-    return head;                                                             \
+int T##List##_append(T##List *list, T value, T##Node *after_node) {          \
+    T##Node *new_node = ALLOC_T(list->alloc, T##Node);                       \
+    if (!new_node) return 0;                                                 \
+    new_node->value = value;                                                 \
+    list_append(list, new_node, after_node);                                 \
+    return 1;                                                                \
 }                                                                            \
                                                                              \
-static void list_##Typename##_free(Allocator *A, Node_##Typename* head) {   \
-    while (head) {                                                           \
-        Node_##Typename* tmp = head;                                         \
-        head = head->next;                                                   \
-        A->free(A->ctx, tmp);                                                \
-    }                                                                        \
-}
+T T##List##_remove_head(T##List *list) {                                     \
+    if (list->tail == NULL) return (T){0};                                   \
+    T value = list->tail->next->value;                                                   \
+    list_free_head(list);                                                    \
+    return value;                                                            \
+}                                                                            \
+                                                                             \
+T T##List##_tail(T##List *list) {                                            \
+    if (list->tail == NULL) return (T){0};                                   \
+    return list->tail->next->value;                                          \
+}                                                                            \
 
-/*
-#include <stdio.h>
-
-LIST(int)
-
-int main(void) {
-    STATIC_ARENA_ALLOCATOR(my_arena, 1024);
-
-    Node_int *list = NULL;
-    list = list_int_push_front(&my_arena, list, 10);
-    list = list_int_push_front(&my_arena, list, 20);
-    list = list_int_push_back(&my_arena, list, 30);
-
-    for (Node_int *cur = list; cur; cur = cur->next)
-        printf("%d -> ", cur->value);
-    printf("NULL\n");
-
-    list_int_free(&my_arena, list);
-    arena_reset(&my_arena);
-    return 0;
-}
-*/
+_END_EXTERN_C
