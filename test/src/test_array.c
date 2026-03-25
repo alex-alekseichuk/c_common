@@ -22,7 +22,7 @@ static Array static_len_array;
 static Array dynamic_array;
 
 void globalSetUp(void) {
-    dynamic_allocator = make_arena_allocator(1024);
+    dynamic_allocator = make_arena_allocator(10240);
     static_array = static_Struct1Array(buffer, 10);
     static_len_array = static_Struct1Array_len(buffer, 10, 0);
 }
@@ -35,6 +35,31 @@ void setUp(void) {
 
 void tearDown(void) {
     array_free(&dynamic_array);
+}
+
+void test_put_outside_array() {
+    Struct1 s, s0 = {0}, s1 = {.x=1, .y=2};
+    s = Struct1Array_get(&dynamic_array, 15);
+    TEST_ASSERT_EQUAL_MEMORY(&s0, &s, sizeof(Struct1));    
+    int result = Struct1Array_put(&dynamic_array, 15, s1);
+    TEST_ASSERT_EQUAL(1, result);
+    s = Struct1Array_get(&dynamic_array, 15);
+    TEST_ASSERT_EQUAL_MEMORY(&s1, &s, sizeof(Struct1));    
+    s = Struct1Array_get(&dynamic_array, 14);
+    TEST_ASSERT_EQUAL_MEMORY(&s0, &s, sizeof(Struct1));    
+}
+
+void test_push_outside_array() {
+    Struct1 s, s0 = {0}, s1 = {.x=1, .y=2};
+    TEST_ASSERT_EQUAL(10, array_size(&dynamic_array));
+    TEST_ASSERT_EQUAL(0, array_len(&dynamic_array));
+    int result;
+    for (int i = 0; i < 11; i++) {
+        result = Struct1Array_push(&dynamic_array, s1);
+        TEST_ASSERT_EQUAL(1, result);
+    }
+    TEST_ASSERT_EQUAL(20, array_size(&dynamic_array));
+    TEST_ASSERT_EQUAL(11, array_len(&dynamic_array));
 }
 
 void test_array_of_struct(Array *array) {
@@ -95,6 +120,9 @@ int main(void) {
     RUN_TEST_FNS(static_)
     RUN_TEST_FNS(static_len_)
     RUN_TEST_FNS(dynamic_)
+
+    RUN_TEST(test_put_outside_array);
+    RUN_TEST(test_push_outside_array);
 
     #undef RUN_TEST_FNS
     #undef RUN_TEST_FN

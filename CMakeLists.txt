@@ -18,6 +18,7 @@ file(GLOB SRC
     src/arena.c
     src/array.c
     src/list.c
+    src/rb_tree.c
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRC})

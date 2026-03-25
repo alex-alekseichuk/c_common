@@ -66,6 +66,8 @@ ctest -C Release
 
 TODO:
 
-- make Array resizeable
+- str
 - implemen Stack by Array and List
 - implement DList
+- stream: foreach, map, filter
+- print tree

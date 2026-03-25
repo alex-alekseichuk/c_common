@@ -33,7 +33,7 @@ void test_list_reverse(void) {
 
     list_reverse((List *)&list);
 
-    Struct1Node *node = list.tail->next;
+    Struct1ListNode *node = list.tail->next;
     TEST_ASSERT_EQUAL_MEMORY(&s3, &(node->value), sizeof(Struct1));
     node = node->next;
     TEST_ASSERT_EQUAL_MEMORY(&s2, &(node->value), sizeof(Struct1));

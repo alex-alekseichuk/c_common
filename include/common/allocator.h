@@ -58,7 +58,7 @@ static inline void* alloc_zero(Allocator *a, size_t size) {
     ((T*)alloc_zero((a), sizeof(T) * (n)))
 
 #define REALLOC(a, ptr, size) (a)->realloc((a)->ctx, (ptr), (size))
-#define REALLOC_N(a, T, n) ((T*)(a)->realloc((a)->ctx, (ptr), sizeof(T) * (n)))
+#define REALLOC_N(a, ptr, T, n) ((T*)(a)->realloc((a)->ctx, (ptr), sizeof(T) * (n)))
 
 // free memory
 #define FREE(a, ptr) (a)->free((a)->ctx, (ptr))

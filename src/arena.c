@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "common/allocator.h"
 #include "common/arena.h"
 
@@ -29,6 +30,8 @@ static void* _arena_realloc(void *ctx, void *ptr, size_t size) {
     }
 
     void *p = _arena_alloc(ctx, size);
+    if (p == NULL) return NULL;
+    
     memcpy(p, ptr, actual_size);
     
     return p;

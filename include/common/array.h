@@ -54,7 +54,13 @@ COMMON_API void array_free(Array *arr);
         };                                              \
     }                                                   \
     int T##Array##_push(Array *arr, T value) {          \
-        if (arr->size <= arr->len) return 0;            \
+        if (arr->size <= arr->len) {                    \
+            size_t size = arr->size < 1024 ? (2 * arr->size) : (125 * arr->size / 100); \
+            void *data = REALLOC_N(arr->alloc, arr->data, T, size); \
+            if (!data) return 0;                        \
+            arr->data = data;                           \
+            arr->size = size;                           \
+        }                                               \
         ((T *)(arr->data))[arr->len++] = value;         \
         return 1;                                       \
     }                                                   \
@@ -73,9 +79,16 @@ COMMON_API void array_free(Array *arr);
             return (T){0};                              \
     }                                                   \
     int T##Array##_put(Array *arr, size_t i, T value) { \
-        if (i >= arr->size) return 0;                   \
+        if (i >= arr->size) {                           \
+            size_t size = arr->size < 1024 ? (2 * arr->size) : (125 * arr->size / 100); \
+            if (size <= i) size = i + 1;                \
+            void *data = REALLOC_N(arr->alloc, arr->data, T, size); \
+            if (!data) return 0;                        \
+            arr->data = data;                           \
+            arr->size = size;                           \
+        }                                               \
         T *data = (T *)(arr->data);                     \
-        while (arr->len < i - 1)                        \
+        while (arr->len <= i - 1)                        \
             data[arr->len++] = (T){0};                  \
         data[arr->len++] = value;                       \
         return 1;                                       \
