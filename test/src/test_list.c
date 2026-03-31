@@ -17,7 +17,7 @@ void tearDown() {
 typedef struct Struct1 {
     int key;
 } Struct1;
-DEFINE_LIST(Struct1)
+DECL_LIST(Struct1)
 
 // .c
 IMPL_LIST(Struct1)

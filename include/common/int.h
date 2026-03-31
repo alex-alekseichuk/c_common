@@ -1,4 +1,7 @@
 #pragma once
+/**
+ * Short aliases of standard  integer types for readability and convenience.
+ */
 
 #include <stdint.h>
 #include "common/common.h"

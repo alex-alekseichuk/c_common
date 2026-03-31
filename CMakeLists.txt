@@ -6,10 +6,11 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 
-# Option to enable/disable tests
 option(BUILD_TESTS "Build tests" ON)
+option(BUILD_EXAMPLES "Build examples" ON)
 
 # to avoid passing -DCMAKE_EXPORT_COMPILE_COMMANDS=1 all the time
+# DCMAKE_EXPORT_COMPILE_COMMANDS creates compile_commands.json for vscode/cursor
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB SRC
@@ -41,6 +42,10 @@ target_include_directories(common PUBLIC
 if(BUILD_TESTS)
     enable_testing()
     add_subdirectory(test)
+endif()
+
+if(BUILD_EXAMPLES)
+    add_subdirectory(examples)
 endif()
 
 # Optional: Install target (headers + library)

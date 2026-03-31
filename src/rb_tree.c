@@ -51,7 +51,7 @@ static void right_rotate(void *tree, void *node) {
     y->parent = x;
 }
 
-void rb_insert_fixup(void *tree, void *node) {
+void rb_insert_fixup_impl(void *tree, void *node) {
     RbTree *t = (RbTree *)tree;
     RbNode *z = (RbNode *)node;
     while (z->parent->color == RB_RED) {
@@ -175,7 +175,7 @@ static void rb_delete_fixup(RbTree *t, RbNode *x) {
     x->color = RB_BLACK;
 }
 
-void rb_delete(void *tree, void *node) {
+void rb_delete_impl(void *tree, void *node) {
     RbTree *t = (RbTree *)tree;
     RbNode *z = (RbNode *)node;
     RbNode *y = z;

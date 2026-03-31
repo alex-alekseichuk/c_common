@@ -24,7 +24,7 @@ foreach(TEST_FILE ${TEST_FILES})
     get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
 
     # create executable
-    add_executable(${TEST_NAME} ${TEST_FILE} src/allocator.c)
+    add_executable(${TEST_NAME} ${TEST_FILE} src/allocator.c src/stack.c)
 
     # link unity and project library
     target_link_libraries(${TEST_NAME}

@@ -1,4 +1,7 @@
 #pragma once
+/**
+ * Circular linked list interface and implementation for a list of type T with allocator.
+ */
 
 #include <stddef.h>
 #include "common/allocator.h"
@@ -21,7 +24,7 @@ COMMON_API void list_append(void *list, void *new_node, void *after_node);
 COMMON_API void list_free_head(void *list);
 COMMON_API void list_reverse(void *list);
 
-#define DEFINE_LIST(T)                                                       \
+#define DECL_LIST(T)                                                       \
 typedef struct T##ListNode {                                                     \
     struct T##ListNode *next;                                                    \
     T value;                                                                 \

@@ -10,7 +10,7 @@ typedef struct Struct1 {
     int x;
     int y;
 } Struct1;
-DEFINE_ARRAY_T(Struct1)
+DECL_ARRAY_T(Struct1)
 
 // .c
 IMPL_ARRAY_T(Struct1)

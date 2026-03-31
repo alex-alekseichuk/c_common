@@ -69,5 +69,9 @@ TODO:
 - str
 - implemen Stack by Array and List
 - implement DList
-- stream: foreach, map, filter
-- print tree
+- stream: foreach, map, filter, reduce
+- example: print tree
+- example: calculator, polish-notation
+- example: http server
+- example: http client
+- example: ast, json, arithmetic

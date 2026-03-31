@@ -1,4 +1,8 @@
 #pragma once
+/**
+ * Doubly linked list interface and implementation for a list of type T with allocator.
+ * TODO: in progress
+ */
 
 #include <stddef.h>
 #include "common/allocator.h"
@@ -19,7 +23,7 @@ typedef struct List {
 COMMON_API void list_free(List *list);
 COMMON_API void list_insert(List *list, ListNode *new_node, ListNode *before_node);
 
-#define DEFINE_LIST(T)                                                       \
+#define DECL_LIST(T)                                                       \
 typedef struct T##Node {                                                     \
     struct T##Node *next;                                                    \
     struct T##Node *prev;                                                    \

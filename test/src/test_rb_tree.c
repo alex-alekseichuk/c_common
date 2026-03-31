@@ -4,7 +4,7 @@
 #include <common/rb_tree.h>
 #include <common/malloc.h>
  
-DEFINE_RB_TREE(int)
+DECL_RB_TREE(int)
 IMPL_RB_TREE(int)
  
 static int int_cmp(void *a, void *b) {

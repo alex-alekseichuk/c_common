@@ -1,4 +1,8 @@
 #pragma once
+/**
+ * Red-Black tree interface and implementation for a tree of type T with allocator.
+ * It's a self-balancing binary search tree.
+ */
 
 #include <stddef.h>
 #include "common/allocator.h"
@@ -26,10 +30,10 @@ typedef struct RbTree {
     RbNode *root;
 } RbTree;
 
-COMMON_API void rb_insert_fixup(void *tree, void *node);
-COMMON_API void rb_delete(void *tree, void *node);
+COMMON_API void rb_insert_fixup_impl(void *tree, void *node);
+COMMON_API void rb_delete_impl(void *tree, void *node);
 
-#define DEFINE_RB_TREE(T)                                                   \
+#define DECL_RB_TREE(T)                                                   \
 typedef struct T##RbNode {                                                  \
     struct T##RbNode *left;                                                 \
     struct T##RbNode *right;                                                \
@@ -83,7 +87,7 @@ int T##RbTree##_insert(T##RbTree *tree, T value) {                          \
     else                                                                    \
         y->right = z;                                                       \
                                                                             \
-    rb_insert_fixup(tree, z);                                               \
+    rb_insert_fixup_impl(tree, z);                                               \
     return 1;                                                               \
 }                                                                           \
                                                                             \
@@ -101,7 +105,7 @@ T##RbNode *T##RbTree##_search(T##RbTree *tree, T value) {                   \
 T T##RbTree##_delete(T##RbTree *tree, T##RbNode *node) {                    \
     if (tree->root == T##RbNIL || node == T##RbNIL || node == NULL) return (T){0}; \
     T value = node->value;                                                  \
-    rb_delete(tree, node);                                                  \
+    rb_delete_impl(tree, node);                                                  \
     FREE(tree->alloc, node);                                                \
     return value;                                                           \
 }                                                                           \

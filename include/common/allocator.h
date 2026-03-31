@@ -1,4 +1,12 @@
 #pragma once
+/**
+ * Allocator interface for memory allocation.
+ * It's used in data structures.
+ * It has implementations:
+ *   - malloc_allocator type uses system malloc/free/realloc
+ *   - arena_allocator type uses pre-allocated buffer.
+ *   - dummy_allocator instance is safe to be used with static memory; it doesn't really allocate.
+ */
 
 #include <stddef.h>
 #include <stdalign.h>

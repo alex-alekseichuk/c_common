@@ -1,4 +1,12 @@
 #pragma once
+/**
+ * Arena allocator allocates memory in a pre-allocated buffer.
+ * It can be instantiated dynamically in runtime by make_arena_allocator(),
+ * or statically in compile time: define by STATIC_ARENA macro, then init by static_arena_allocator().
+ *
+ * It's useful for allocating many small objects, as it reduces the number of system calls.
+ * Also, it can be used to allocate memory in a fixed-size buffer, which is useful for embedded systems.
+ */
 
 #include <stddef.h>
 #include <stdalign.h>
