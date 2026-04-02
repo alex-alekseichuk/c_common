@@ -1,46 +1,46 @@
 #pragma once
 /**
- * Stack interface implementation based on Array data structure.
+ * Stack interface implementation based on List data structure.
  */
 
 #include <stddef.h>
-#include "common/array.h"
+#include "common/list.h"
 #include "common/stack.h"
 
 _BEGIN_EXTERN_C
 
-#define DECL_ARRAY_STACK_T_NAME(T, Name)                            \
-COMMON_API Name make_##Name(Array *array);                          \
+#define DECL_LIST_STACK_T_NAME(T, StackName, ListName)              \
+COMMON_API StackName make_##StackName(ListName *list);              \
 
-#define DECL_ARRAY_STACK_T(T) DECL_ARRAY_STACK_T_NAME(T, T##Stack)
+#define DECL_LIST_STACK_T(T) DECL_LIST_STACK_T_NAME(T, T##Stack, T##List)
 
-#define IMPL_ARRAY_STACK_T_NAME(T, StackName, ArrayName)            \
+#define IMPL_LIST_STACK_T_NAME(T, StackName, ListName)              \
 static int StackName##_push(void *ctx, T value) {                   \
-    return ArrayName##_push((Array *)ctx, value);                   \
+    return ListName##_insert_head((ListName *)ctx, value);          \
 }                                                                   \
                                                                     \
 static T StackName##_pop(void *ctx) {                               \
-    return ArrayName##_pop((Array *)ctx);                           \
+    return ListName##_remove_head((ListName *)ctx);                 \
 }                                                                   \
                                                                     \
 static T StackName##_top(void *ctx) {                               \
-    return ArrayName##_top((Array *)ctx);                           \
+    return ListName##_head((ListName *)ctx);                        \
 }                                                                   \
                                                                     \
 static int StackName##_empty(void *ctx) {                           \
-    return array_len((Array *)ctx) == 0;                            \
+    return ((ListName *)ctx)->tail == NULL;                         \
 }                                                                   \
                                                                     \
-StackName make_##StackName(Array *array) {                          \
+StackName make_##StackName(ListName *list) {                        \
     return (StackName){                                             \
         .push = StackName##_push,                                   \
         .pop = StackName##_pop,                                     \
         .top = StackName##_top,                                     \
         .empty = StackName##_empty,                                 \
-        .ctx = array                                                \
+        .ctx = list                                                 \
     };                                                              \
 }                                                                   \
 
-#define IMPL_ARRAY_STACK_T(T) IMPL_ARRAY_STACK_T_NAME(T, T##Stack, T##Array)
+#define IMPL_LIST_STACK_T(T) IMPL_LIST_STACK_T_NAME(T, T##Stack, T##List)
 
 _END_EXTERN_C

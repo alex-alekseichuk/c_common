@@ -1,7 +1,6 @@
 #pragma once
 /**
- * Doubly linked list interface and implementation for a list of type T with allocator.
- * TODO: in progress
+ * TODO: Doubly linked list interface and implementation for a list of type T with allocator.
  */
 
 #include <stddef.h>

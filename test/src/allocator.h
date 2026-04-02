@@ -37,4 +37,3 @@ void testfn_alloc_printf(Allocator *allocator);
     RUN_TEST_FN(Prefix, alloc_n_macro); \
     RUN_TEST_FN(Prefix, alloc_zero_n_macro); \
     RUN_TEST_FN(Prefix, alloc_printf);
-

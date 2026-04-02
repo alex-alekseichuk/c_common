@@ -17,10 +17,10 @@ void tearDown() {
 typedef struct Struct1 {
     int key;
 } Struct1;
-DECL_LIST(Struct1)
+DECL_LIST_T(Struct1)
 
 // .c
-IMPL_LIST(Struct1)
+IMPL_LIST_T(Struct1)
 
 void test_list_reverse(void) {
     Struct1List list = make_Struct1List(&allocator);

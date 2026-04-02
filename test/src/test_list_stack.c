@@ -1,0 +1,36 @@
+#include <unity.h>
+#include <common/malloc.h>
+#include <common/list_stack.h>
+#include "stack.h"
+
+static Allocator allocator;
+
+// .h
+DECL_LIST_T(Struct1);
+static Struct1List list;
+DECL_LIST_STACK_T(Struct1);
+static Struct1Stack list_stack;
+
+void setUp(void) {
+    allocator = make_malloc_allocator();
+    list = make_Struct1List(&allocator);
+    list_stack = make_Struct1Stack(&list);
+}
+
+void tearDown(void) {
+    list_free(&list);
+}
+
+// .c
+IMPL_LIST_T(Struct1);
+IMPL_LIST_STACK_T(Struct1);
+
+TEST_FNS(list_)
+
+int main(void) {
+    UNITY_BEGIN();
+
+    RUN_TEST_FNS(list_)
+
+    return UNITY_END();
+}
