@@ -30,7 +30,7 @@ char* malloc_printf(const char *fmt, ...) {
 typedef struct Str {
     size_t size;
     size_t len;
-    char data[];
+    char *data;
 } Str;
 
 Str *str(Allocator *a, const char *pchar) {

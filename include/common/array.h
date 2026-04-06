@@ -59,7 +59,7 @@ COMMON_API void array_free(Array *arr);
     }                                                   \
     int T##Array##_push(Array *arr, T value) {          \
         if (arr->size <= arr->len) {                    \
-            size_t size = arr->size < 1024 ? (2 * arr->size) : (125 * arr->size / 100); \
+            size_t size = arr->size < 256 ? (2 * arr->size) : (arr->size + ((arr->size + 768) >> 2)); \
             void *data = REALLOC_N(arr->alloc, arr->data, T, size); \
             if (!data) return 0;                        \
             arr->data = data;                           \
@@ -84,7 +84,7 @@ COMMON_API void array_free(Array *arr);
     }                                                   \
     int T##Array##_put(Array *arr, size_t i, T value) { \
         if (i >= arr->size) {                           \
-            size_t size = arr->size < 1024 ? (2 * arr->size) : (125 * arr->size / 100); \
+            size_t size = arr->size < 256 ? (2 * arr->size) : (arr->size + ((arr->size + 768) >> 2)); \
             if (size <= i) size = i + 1;                \
             void *data = REALLOC_N(arr->alloc, arr->data, T, size); \
             if (!data) return 0;                        \
