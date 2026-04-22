@@ -5,6 +5,10 @@
 
 static Allocator dynamic_allocator;
 
+typedef struct S2 {
+    char *str;
+} S2;
+
 // .h
 typedef struct Struct1 {
     int x;
@@ -15,14 +19,14 @@ DECL_ARRAY_T(Struct1)
 // .c
 IMPL_ARRAY_T(Struct1)
 
-static BUFFER(buffer, Struct1, 10)
+static BUFFER(buffer, Struct1, 10);
 
 static Array static_array;
 static Array static_len_array;
 static Array dynamic_array;
 
 void globalSetUp(void) {
-    dynamic_allocator = make_arena_allocator(10240);
+    dynamic_allocator = make_malloc_arena(10240);
     static_array = static_Struct1Array(buffer, 10);
     static_len_array = static_Struct1Array_len(buffer, 10, 0);
 }

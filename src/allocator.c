@@ -4,7 +4,7 @@
 #include "common/allocator.h"
 
 const size_t SIZE_T = sizeof(size_t); // 8
-const size_t ALIGN = sizeof(max_align_t); // 32
+const size_t ALIGN_SIZE = sizeof(max_align_t); // 32
 
 static void* dummy_alloc(void *ctx, size_t size) {(void)ctx; (void)size; return NULL;}
 static void* dummy_realloc(void *ctx, void *ptr, size_t size) {(void)ctx; (void)ptr; (void)size; return NULL;}
@@ -18,6 +18,12 @@ Allocator dummy_allocator = {
     ._sizeof = dummy_sizeof,
     .ctx = NULL,
 };
+
+void* alloc_zero(Allocator *a, size_t size) {
+    void *p = a->alloc(a->ctx, size);
+    if (p) memset(p, 0, size);
+    return p;
+}
 
 char* alloc_printf(Allocator *a, const char *fmt, ...) {
     va_list ap;

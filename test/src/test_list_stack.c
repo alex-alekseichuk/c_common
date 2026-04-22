@@ -11,6 +11,10 @@ static Struct1List list;
 DECL_LIST_STACK_T(Struct1);
 static Struct1Stack list_stack;
 
+// .c
+IMPL_LIST_T(Struct1);
+IMPL_LIST_STACK_T(Struct1);
+
 void setUp(void) {
     allocator = make_malloc_allocator();
     list = make_Struct1List(&allocator);
@@ -20,10 +24,6 @@ void setUp(void) {
 void tearDown(void) {
     list_free(&list);
 }
-
-// .c
-IMPL_LIST_T(Struct1);
-IMPL_LIST_STACK_T(Struct1);
 
 TEST_FNS(list_)
 

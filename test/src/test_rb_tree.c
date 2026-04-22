@@ -187,7 +187,35 @@ void test_rb_duplicates_allowed_and_valid(void) {
     rb_assert_order_duplicates_right(tree.root, 0, 0, 0, 0);
     rb_assert_valid(&tree);
 }
- 
+
+static int range_query_sum;
+
+void add_value(int value) {
+    range_query_sum += value;
+}
+
+void test_rb_range_query(void) {
+    Allocator alloc = make_malloc_allocator();
+    intRbTree tree = make_intRbTree(&alloc, int_cmp);
+
+    // Insert some values into the tree
+    int values[] = {10, 5, 15, 3, 7, 12, 18};
+    int n = (int)(sizeof(values) / sizeof(values[0]));
+    for (int i = 0; i < n; i++) {
+        TEST_ASSERT_EQUAL(1, intRbTree_insert(&tree, values[i]));
+    }
+
+    // Perform range queries
+    int min = 5;
+    int max = 12;
+    range_query_sum = 0;
+    intRbTree_range_query(&tree, min, max, add_value);
+
+    TEST_ASSERT_EQUAL(5 + 7 + 10 + 12, range_query_sum);
+
+    rb_assert_valid(&tree);
+}
+
 int main(void) {
     UNITY_BEGIN();
  
@@ -195,7 +223,7 @@ int main(void) {
     RUN_TEST(test_rb_search_finds_inserted_and_nil_for_missing);
     RUN_TEST(test_rb_delete_leaf_one_child_two_child_keeps_valid);
     RUN_TEST(test_rb_duplicates_allowed_and_valid);
+    RUN_TEST(test_rb_range_query);
  
     return UNITY_END();
 }
-

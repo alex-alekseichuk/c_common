@@ -15,25 +15,22 @@ typedef int(*cmp_fn)(void *a, void *b);
 #define RB_RED 1
 #define RB_BLACK 0
 
-typedef struct RbNode {
-    struct RbNode *left;
-    struct RbNode *right;
-    struct RbNode *parent;
-    unsigned char color;
-} RbNode;
-
+typedef struct RbNode RbNode;
 extern RbNode RB_NIL;
-
-typedef struct RbTree {
-    Allocator *alloc;
-    cmp_fn cmp;
-    RbNode *root;
-} RbTree;
 
 COMMON_API void rb_insert_fixup_impl(void *tree, void *node);
 COMMON_API void rb_delete_impl(void *tree, void *node);
 
-#define DECL_RB_TREE(T)                                                   \
+#define DECL_RB_TREE(T)                                                     \
+typedef struct T##RbNode T##RbNode;                                         \
+typedef struct T##RbTree T##RbTree;                                         \
+COMMON_API T##RbTree make_##T##RbTree(Allocator *alloc, cmp_fn cmp);        \
+COMMON_API int T##RbTree##_insert(T##RbTree *tree, T value);                \
+COMMON_API T##RbNode *T##RbTree##_search(T##RbTree *tree, T value);         \
+COMMON_API T T##RbTree##_delete(T##RbTree *tree, T##RbNode *node);          \
+COMMON_API void T##RbTree##_range_query(T##RbTree *tree, T min, T max, void (*callback)(T)); \
+
+#define IMPL_RB_TREE(T)                                                     \
 typedef struct T##RbNode {                                                  \
     struct T##RbNode *left;                                                 \
     struct T##RbNode *right;                                                \
@@ -48,13 +45,8 @@ typedef struct T##RbTree {                                                  \
     T##RbNode *root;                                                        \
 } T##RbTree;                                                                \
                                                                             \
-COMMON_API T##RbTree make_##T##RbTree(Allocator *alloc, cmp_fn cmp);        \
-COMMON_API int T##RbTree##_insert(T##RbTree *tree, T value);                \
-COMMON_API T##RbNode *T##RbTree##_search(T##RbTree *tree, T value);         \
-COMMON_API T T##RbTree##_delete(T##RbTree *tree, T##RbNode *node);          \
-
-#define IMPL_RB_TREE(T)                                                     \
 static T##RbNode *T##RbNIL = (T##RbNode *)&RB_NIL;                          \
+                                                                            \
 T##RbTree make_##T##RbTree(Allocator *alloc, cmp_fn cmp) {                  \
     return (T##RbTree){.alloc=alloc, .cmp=cmp, .root=T##RbNIL};             \
 }                                                                           \
@@ -109,5 +101,30 @@ T T##RbTree##_delete(T##RbTree *tree, T##RbNode *node) {                    \
     FREE(tree->alloc, node);                                                \
     return value;                                                           \
 }                                                                           \
+                                                                            \
+void T##RbTree##_range_query(T##RbTree *tree, T min, T max, void (*callback)(T)) { \
+    if (tree->root == T##RbNIL) return; \
+    T##RbNode *stack[100]; \
+    int stack_size = 0; \
+    T##RbNode *current = tree->root; \
+ \
+    while (current != T##RbNIL || stack_size > 0) { \
+        while (current != T##RbNIL) { \
+            stack[stack_size++] = current; \
+            current = current->left; \
+        } \
+ \
+        current = stack[--stack_size]; \
+ \
+        int cmp_min = tree->cmp(&current->value, &min); \
+        int cmp_max = tree->cmp(&current->value, &max); \
+ \
+        if (cmp_min >= 0 && cmp_max <= 0) { \
+            callback(current->value); \
+        } \
+ \
+        current = current->right; \
+    } \
+} \
 
 _END_EXTERN_C

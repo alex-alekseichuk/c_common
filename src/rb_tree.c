@@ -1,11 +1,24 @@
 #include "common/rb_tree.h"
 
+typedef struct RbNode {
+    struct RbNode *left;
+    struct RbNode *right;
+    struct RbNode *parent;
+    unsigned char color;
+} RbNode;
+
 RbNode RB_NIL = {
     .left=NULL,
     .right=NULL,
     .parent=NULL,
     .color=RB_BLACK
-};
+}, *P_RB_NIL = &RB_NIL;
+
+typedef struct RbTree {
+    Allocator *alloc;
+    cmp_fn cmp;
+    RbNode *root;
+} RbTree;
 
 static void left_rotate(void *tree, void *node) {
     RbTree *t = (RbTree *)tree;

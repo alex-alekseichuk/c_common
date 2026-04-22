@@ -6,6 +6,7 @@ static void* _malloc_alloc(void *ctx, size_t size) {
 
     size_t real_size = size + SIZE_T;
     void *p = malloc(real_size);
+    if (p == NULL) return NULL;
     *((size_t *)p) = size;
 
     return ((size_t *)p) + 1;
@@ -16,6 +17,7 @@ static void *_malloc_realloc(void *ctx, void *ptr, size_t size) {
 
     size_t real_size = size + SIZE_T;
     void *p = realloc(((size_t *)ptr) - 1, real_size);
+    if (p == NULL) return NULL;
     *((size_t *)p) = size;
 
     return (((size_t *)p) + 1);

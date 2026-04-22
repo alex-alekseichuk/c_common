@@ -22,3 +22,9 @@
 Example of a function declaration in the headers:
 COMMON_API int func(int n);
 */
+
+extern const size_t SIZE_T; // 8
+extern const size_t ALIGN_SIZE; // 32
+#define ALIGN(size) (((size) + ALIGN_SIZE - 1) & ~(ALIGN_SIZE - 1))
+
+#define BUFFER(NAME, T, SIZE) alignas(max_align_t) T NAME[(SIZE)]

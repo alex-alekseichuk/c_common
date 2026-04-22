@@ -4,12 +4,13 @@
 #include "allocator.h"
 
 static Allocator dynamic_allocator;
+
 static Allocator static_allocator;
-STATIC_ARENA(static_arena, 1024)
+static BUFFER(static_allocator_buffer, uint8_t, 10240);
 
 void globalSetUp(void) {
-    dynamic_allocator = make_arena_allocator(1024);
-    static_allocator = static_arena_allocator(&static_arena);
+    dynamic_allocator = make_malloc_arena(10240);
+    static_allocator = make_buffer_arena(static_allocator_buffer, 10240);
 }
 void globalTearDown(void) {
     arena_free(&dynamic_allocator);
