@@ -20,6 +20,7 @@ extern RbNode RB_NIL;
 
 COMMON_API void rb_insert_fixup_impl(void *tree, void *node);
 COMMON_API void rb_delete_impl(void *tree, void *node);
+COMMON_API void rb_free(void *tree);
 
 #define DECL_RB_TREE(T)                                                     \
 typedef struct T##RbNode T##RbNode;                                         \

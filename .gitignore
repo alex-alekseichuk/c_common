@@ -36,3 +36,5 @@ compile_commands.json
 .cache
 debug
 release
+.idea
+.proxyai

@@ -223,3 +223,26 @@ void rb_delete_impl(void *tree, void *node) {
     if (y_original_color == RB_BLACK)
         rb_delete_fixup(t, x);
 }
+
+static void rb_node_free(RbTree *tree, const RbNode *node)
+{
+    if (node->left != &RB_NIL)
+    {
+        rb_node_free(tree, node->left);
+        FREE(tree->alloc, node->left);
+    }
+    if (node->right != &RB_NIL)
+    {
+        rb_node_free(tree, node->right);
+        FREE(tree->alloc, node->right);
+    }
+}
+
+void rb_free(void *tree) {
+    RbTree *t = tree;
+    if (t->root != &RB_NIL)
+    {
+        rb_node_free(t, t->root);
+        FREE(t->alloc, t->root);
+    }
+}

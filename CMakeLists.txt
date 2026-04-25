@@ -3,6 +3,7 @@ project(common C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_COMPILER g++)
 
 include(${CMAKE_BINARY_DIR}/conan_toolchain.cmake)
 

@@ -144,6 +144,8 @@ static void print_tree_sideways_with_connectors(intRbTree *tree) {
             if (x_mid >= 0 && x_mid < width) {
                 grid[(size_t)y_parent * (size_t)width + (size_t)x_mid] = '+';
                 grid[(size_t)y_child * (size_t)width + (size_t)x_mid] = '+';
+                for (int x = x_mid + 1; x <= x_mid + 3; x++)
+                    grid[(size_t)y_child * (size_t)width + (size_t)x] = '-';
             }
             if (x_dash >= 0 && x_dash < width) {
                 grid[(size_t)y_parent * (size_t)width + (size_t)x_dash] = '-';
@@ -195,6 +197,8 @@ int main(void) {
 
     printf("Red-black tree (sideways):\n");
     print_tree_sideways_with_connectors(&tree);
+
+    rb_free(&tree);
 
     return 0;
 }
