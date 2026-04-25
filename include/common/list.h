@@ -11,14 +11,8 @@
 
 _BEGIN_EXTERN_C
 
-typedef struct ListNode {
-    struct ListNode *next;
-} ListNode;
-
-typedef struct List {
-    Allocator *alloc;
-    ListNode *tail;
-} List;
+typedef struct ListNode ListNode;
+typedef struct List List;
 
 COMMON_API void list_free(void *list);
 COMMON_API void list_insert_head(void *list, void *new_node);

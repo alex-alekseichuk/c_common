@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "common/malloc.h"
+#include "common/allocator.h"
 
 static void* _malloc_alloc(void *ctx, size_t size) {
     (void)ctx;
@@ -33,12 +33,10 @@ static size_t _malloc_sizeof(void *ctx, void *ptr) {
     return *(((size_t *)ptr) - 1);
 }
 
-Allocator make_malloc_allocator() {
-    return (Allocator){
-        .alloc = _malloc_alloc,
-        .realloc = _malloc_realloc,
-        .free  = _malloc_free,
-        ._sizeof = _malloc_sizeof,
-        .ctx   = NULL
-    };
-}
+Allocator sys_alloc = {
+    .alloc = _malloc_alloc,
+    .realloc = _malloc_realloc,
+    .free  = _malloc_free,
+    ._sizeof = _malloc_sizeof,
+    .ctx = NULL,
+};

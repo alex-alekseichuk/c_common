@@ -1,13 +1,9 @@
 #include <unity.h>
 #include <stdbool.h>
-#include <common/arena.h>
+#include <common/arena_alloc.h>
 #include <common/array.h>
 
 static Allocator dynamic_allocator;
-
-typedef struct S2 {
-    char *str;
-} S2;
 
 // .h
 typedef struct Struct1 {
@@ -17,6 +13,7 @@ typedef struct Struct1 {
 DECL_ARRAY_T(Struct1)
 
 // .c
+#include <common/array_impl.h>
 IMPL_ARRAY_T(Struct1)
 
 static BUFFER(buffer, Struct1, 10);

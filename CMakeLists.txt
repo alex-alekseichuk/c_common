@@ -15,11 +15,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB SRC
     src/allocator.c
-    src/malloc.c
-    src/arena.c
+    src/sys_alloc.c
+    src/arena_alloc.c
     src/array.c
     src/list.c
     src/rb_tree.c
+    src/str.c
 )
 
 add_library(${PROJECT_NAME} SHARED ${SRC})

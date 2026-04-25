@@ -1,12 +1,19 @@
 #pragma once
 /**
  * Allocator interface for memory allocation.
+ * An entity of the interface can allocate and free memory.
+ * It has abstract context implementation.
  * It's used in data structures.
+ * Allocatated chunk of memory has size property and the buffer.
  * It has implementations:
- *   - malloc_allocator type uses system malloc/free/realloc
- *   - arena_allocator type uses pre-allocated buffer.
- *   - dummy_allocator instance is safe to be used with static memory;
- *     it doesn't really allocate.
+ *   - sys_alloc instance uses system malloc/free/realloc
+ *       - not just the alias for system
+ *   - arena_alloc type uses pre-allocated buffer.
+ *       - use already existing buffer on stack/static/global/heap
+ *       - or malloc buffer in runtime
+ *   - dummy_alloc instance allocates nothing
+ *       - safe to be used with static memory;
+ * 
  */
 
 #include <stddef.h>
@@ -22,8 +29,6 @@ typedef void (*free_fn)(void *ctx, void *ptr);
 typedef size_t (*sizeof_fn)(void *ctx, void *ptr);
 
 // allocator interface
-// an entity that can allocate and free memory
-// it has abstract context implementation
 typedef struct Allocator {
     alloc_fn alloc;
     realloc_fn realloc;
@@ -32,7 +37,8 @@ typedef struct Allocator {
     void *ctx;
 } Allocator;
 
-extern Allocator dummy_allocator;
+extern Allocator dummy_alloc;
+extern Allocator sys_alloc;
 
 #define ALLOC(a, size) ((a)->alloc((a)->ctx, (size)))
 

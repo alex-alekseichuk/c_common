@@ -1,11 +1,11 @@
 #include <unity.h>
-#include <common/malloc.h>
+#include <common/allocator.h>
 #include "allocator.h"
 
 static Allocator malloc_allocator;
 
 void setUp(void) {
-    malloc_allocator = make_malloc_allocator();
+    malloc_allocator = sys_alloc;
 }
 
 void tearDown(void) {

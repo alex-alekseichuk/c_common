@@ -28,3 +28,13 @@ extern const size_t ALIGN_SIZE; // 32
 #define ALIGN(size) (((size) + ALIGN_SIZE - 1) & ~(ALIGN_SIZE - 1))
 
 #define BUFFER(NAME, T, SIZE) alignas(max_align_t) T NAME[(SIZE)]
+
+#if defined(__GNUC__) || defined(__clang__)
+#define container_of(ptr, type, member) ({                             \
+    const typeof(((type *)0)->member[0]) *__mptr = (ptr);              \
+    (type *)((char *)__mptr - offsetof(type, member));                 \
+})
+#else
+#define container_of(ptr, type, member) \
+    (type *)((char *)(ptr) - offsetof(type, member))
+#endif

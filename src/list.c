@@ -1,5 +1,14 @@
 #include "common/list.h"
 
+typedef struct ListNode {
+    struct ListNode *next;
+} ListNode;
+
+typedef struct List {
+    Allocator *alloc;
+    ListNode *tail;
+} List;
+
 void list_free(void *list) {
     List *_list = (List *)list;
     ListNode *node = _list->tail;

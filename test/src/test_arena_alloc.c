@@ -1,6 +1,6 @@
 #include <complex.h>
 #include <unity.h>
-#include <common/arena.h>
+#include <common/arena_alloc.h>
 #include "allocator.h"
 
 static Allocator dynamic_allocator;

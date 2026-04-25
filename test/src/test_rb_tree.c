@@ -2,7 +2,7 @@
 #include <string.h>
  
 #include <common/rb_tree.h>
-#include <common/malloc.h>
+#include <common/allocator.h>
  
 DECL_RB_TREE(int)
 IMPL_RB_TREE(int)
@@ -105,7 +105,7 @@ void setUp(void) {}
 void tearDown(void) {}
  
 void test_rb_insert_sorted_keeps_valid(void) {
-    Allocator alloc = make_malloc_allocator();
+    Allocator alloc = sys_alloc;
     intRbTree tree = make_intRbTree(&alloc, int_cmp);
  
     for (int i = 1; i <= 64; i++) {
@@ -117,7 +117,7 @@ void test_rb_insert_sorted_keeps_valid(void) {
 }
  
 void test_rb_search_finds_inserted_and_nil_for_missing(void) {
-    Allocator alloc = make_malloc_allocator();
+    Allocator alloc = sys_alloc;
     intRbTree tree = make_intRbTree(&alloc, int_cmp);
  
     int values[] = {10, 5, 15, 3, 7, 12, 18};
@@ -137,7 +137,7 @@ void test_rb_search_finds_inserted_and_nil_for_missing(void) {
 }
  
 void test_rb_delete_leaf_one_child_two_child_keeps_valid(void) {
-    Allocator alloc = make_malloc_allocator();
+    Allocator alloc = sys_alloc;
     intRbTree tree = make_intRbTree(&alloc, int_cmp);
  
     for (int i = 1; i <= 63; i++) {
@@ -173,7 +173,7 @@ void test_rb_delete_leaf_one_child_two_child_keeps_valid(void) {
 }
  
 void test_rb_duplicates_allowed_and_valid(void) {
-    Allocator alloc = make_malloc_allocator();
+    Allocator alloc = sys_alloc;
     intRbTree tree = make_intRbTree(&alloc, int_cmp);
  
     int values[] = {10, 10, 10, 5, 15, 10, 7, 10};
@@ -195,7 +195,7 @@ void add_value(int value) {
 }
 
 void test_rb_range_query(void) {
-    Allocator alloc = make_malloc_allocator();
+    Allocator alloc = sys_alloc;
     intRbTree tree = make_intRbTree(&alloc, int_cmp);
 
     // Insert some values into the tree

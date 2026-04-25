@@ -4,7 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "common/allocator.h"
-#include "common/arena.h"
+#include "common/arena_alloc.h"
 
 typedef struct ArenaCtx {
     uint8_t *buffer;

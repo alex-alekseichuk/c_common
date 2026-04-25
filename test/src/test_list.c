@@ -1,14 +1,13 @@
 #include <unity.h>
 #include <stdlib.h>
 #include <string.h>
-#include <common/malloc.h>
 #include <common/allocator.h>
 #include <common/list.h>
 
 static Allocator allocator;
 
 void setUp() {
-    allocator = make_malloc_allocator();
+    allocator = sys_alloc;
 }
 void tearDown() {
 }

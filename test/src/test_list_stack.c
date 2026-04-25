@@ -1,5 +1,5 @@
 #include <unity.h>
-#include <common/malloc.h>
+#include <common/allocator.h>
 #include <common/list_stack.h>
 #include "stack.h"
 
@@ -16,7 +16,7 @@ IMPL_LIST_T(Struct1);
 IMPL_LIST_STACK_T(Struct1);
 
 void setUp(void) {
-    allocator = make_malloc_allocator();
+    allocator = sys_alloc;
     list = make_Struct1List(&allocator);
     list_stack = make_Struct1Stack(&list);
 }

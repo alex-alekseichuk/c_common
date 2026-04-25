@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <common/malloc.h>
+#include <common/allocator.h>
 #include <common/rb_tree.h>
 
 DECL_RB_TREE(int)
@@ -186,7 +186,7 @@ int main(void) {
     };
     const int n = (int)(sizeof(values) / sizeof(values[0]));
 
-    Allocator alloc = make_malloc_allocator();
+    Allocator alloc = sys_alloc;
     intRbTree tree = make_intRbTree(&alloc, int_cmp);
 
     for (int i = 0; i < n; i++) {

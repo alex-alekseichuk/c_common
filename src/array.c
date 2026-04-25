@@ -4,6 +4,7 @@
 #include <string.h>
 #include "common/allocator.h"
 #include "common/array.h"
+#include "common/array_impl.h"
 
 size_t array_size(Array *arr) {return arr->size;}
 

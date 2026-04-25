@@ -1,157 +1,128 @@
-#include <stddef.h>
-#include <stdarg.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <string.h>
 #include "common/allocator.h"
+#include "common/str.h"
 
-size_t utf8_strlen(const char *s) {
-    size_t count = 0;
-    while (*s) {
-        if ((*s & 0xC0) != 0x80)
-            count++;
-        s++;
-    }
-    return count;
-}
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 
-char* malloc_printf(const char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    int n = vsnprintf(NULL, 0, fmt, ap);
-    va_end(ap);
-
-    char *buf = malloc(n + 1);
-
-    va_start(ap, fmt);
-    vsnprintf(buf, n + 1, fmt, ap);
-    va_end(ap);
-
-    return buf;
-}
-
-typedef struct Str {
-    size_t size;
+typedef struct {
     size_t len;
-    char *data;
-} Str;
+    size_t size;
+    const Allocator *alloc;
+    char data[];
+} str_hdr;
 
-Str *str(Allocator *a, const char *pchar) {
-    size_t len = pchar ? strlen(pchar) : 0;
-    Str *s = a->alloc(a->ctx, sizeof(Str) + len + 1);
-    s->size = len;
-    s->len = len;
-    if (pchar)
-        memcpy(s->data, pchar, len);
-    s->data[len] = '\0';
+static str_hdr *str__hdr(char *s) {
+    return s ? container_of(s, str_hdr, data) : NULL;
+}
+
+static const str_hdr *str__hdr_const(const char *s) {
+    return s ? container_of(s, str_hdr, data) : NULL;
+}
+
+static size_t str__grow_size(size_t size, size_t min_needed) {
+    size_t new_size = size ? size : 16;
+    while (new_size < min_needed) {
+        if (new_size < 1024) new_size *= 2;
+        else new_size = new_size * 125 / 100;
+    }
+    return new_size;
+}
+
+static char *str__resize(char *s, size_t new_size) {
+    str_hdr *hdr = str__hdr(s);
+    size_t size = sizeof(str_hdr) + new_size + 1;
+
+    str_hdr *new_hdr = REALLOC(hdr->alloc, hdr, size);
+    if (!new_hdr) return NULL;
+
+    new_hdr->size = new_size;
+    return new_hdr->data;
+}
+
+char *make_str_alloc(const Allocator *a) {
+    if (!a) a = &sys_alloc;
+
+    size_t size = 16;
+    size_t _size = sizeof(str_hdr) + size + 1;
+
+    str_hdr *hdr = ALLOC(a, _size);
+    if (!hdr) return NULL;
+
+    hdr->len = 0;
+    hdr->size = size;
+    hdr->alloc = a;
+    hdr->data[0] = '\0';
+
+    return hdr->data;
+}
+
+char *make_str(void) {
+    return make_str_alloc(&sys_alloc);
+}
+
+void str_free(char *s) {
+    if (!s) return;
+    str_hdr *hdr = str__hdr(s);
+    FREE(hdr->alloc, hdr);
+}
+
+char *str_resize(char *s, size_t new_size) {
+    if (!s) return NULL;
+
+    str_hdr *hdr = str__hdr(s);
+
+    if (new_size <= hdr->size) return s;
+
+    new_size = str__grow_size(hdr->size, new_size);
+    return str__resize(s, new_size);
+}
+
+char *str_cat_n(char *s, const char *data, size_t n) {
+    if (!s || !data) return s;
+
+    str_hdr *hdr = str__hdr(s);
+
+    s = str_resize(s, hdr->len + n);
+    if (!s) return NULL;
+
+    memcpy(s + hdr->len, data, n);
+    hdr->len += n;
+    s[hdr->len] = '\0';
+
     return s;
 }
 
-Str *str_n(Allocator *a, size_t size) {
-    Str *s = a->alloc(a->ctx, sizeof(Str) + size + 1);
-    s->size = size;
-    s->len = 0;
-    s->data[0] = '\0';
+char *str_cat(char *s, const char *cstr) {
+    if (!cstr) return s;
+    return str_cat_n(s, cstr, strlen(cstr));
+}
+
+char *str_cpy(char *s, const char *cstr) {
+    if (!s || !cstr) return s;
+
+    size_t n = strlen(cstr);
+    s = str_resize(s, n);
+    if (!s) return NULL;
+
+    str_hdr *hdr = str__hdr(s);
+    memcpy(s, cstr, n);
+    hdr->len = n;
+    s[n] = '\0';
+
     return s;
 }
 
-str_cpy() {
-    
+size_t str_len(const char *s) {
+    const str_hdr *hdr = str__hdr_const(s);
+    return hdr ? hdr->len : 0;
 }
 
-
-
-
-/*
-    char *line = NULL;
-    size_t len = 0;
-
-    ssize_t nread = read_line(&line, &len, stdin);
-
-    if (nread != -1) {
-        printf("Read: %s", line);
-    }
-
-    free(line);
-*/
-size_t read_line(char **lineptr, size_t *n, FILE *stream) {
-    if (!lineptr || !n || !stream) return -1;
-
-    size_t size = (*lineptr && *n > 0) ? *n : 128;
-
-    if (*lineptr == NULL) {
-        *lineptr = malloc(size);
-        if (!*lineptr) return -1;
-        *n = size;
-    }
-
-    size_t len = 0;
-    int c;
-
-    while ((c = fgetc(stream)) != EOF) {
-        if (len + 1 >= *n) {
-            size_t new_size = *n * 2;
-            char *tmp = realloc(*lineptr, new_size);
-            if (!tmp) return -1;
-
-            *lineptr = tmp;
-            *n = new_size;
-        }
-
-        (*lineptr)[len++] = (char)c;
-
-        if (c == '\n')
-            break;
-    }
-
-    if (len == 0 && c == EOF)
-        return -1;
-
-    (*lineptr)[len] = '\0';
-    return (size_t)len;
+size_t str_size(const char *s) {
+    const str_hdr *hdr = str__hdr_const(s);
+    return hdr ? hdr->size : 0;
 }
 
-int str_split(const char *str, char *tokens[], int size) {
-    int count = 0;
-    char *token = strtok(str, " \n");
-    while (token != NULL && count < size) {
-        tokens[count++] = token;
-        token = strtok(NULL, " \n");
-    }
-    return count;
-}
+#pragma GCC diagnostic pop
 
-char **malloc_split(const char *str, int *out_count) {
-    int capacity = 10;
-    int count = 0;
-    char **result = malloc(capacity * sizeof(char*));
-
-    const char *start = str;
-
-    while (*str) {
-        // skip spaces
-        while (*str == ' ') str++;
-
-        if (*str == '\0') break;
-
-        start = str;
-
-        // find word end
-        while (*str && *str != ' ') str++;
-
-        int len = str - start;
-
-        char *word = malloc(len + 1);
-        memcpy(word, start, len);
-        word[len] = '\0';
-
-        if (count >= capacity) {
-            capacity *= 2;
-            result = realloc(result, capacity * sizeof(char*));
-        }
-
-        result[count++] = word;
-    }
-
-    *out_count = count;
-    return result;
-}
