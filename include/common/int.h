@@ -1,6 +1,6 @@
 #pragma once
 /**
- * Short aliases of standard  integer types for readability and convenience.
+ * Short aliases of standard integer types for readability and convenience.
  */
 
 #include <stdint.h>

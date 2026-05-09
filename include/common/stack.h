@@ -7,25 +7,28 @@
 
 _BEGIN_EXTERN_C
 
-#define DECL_STACK_T_NAME(T, Name) \
-typedef int (*push_fn)(void *ctx, T value); \
-typedef T (*pop_fn)(void *ctx); \
-typedef T (*top_fn)(void *ctx); \
-typedef int (*empty_fn)(void *ctx); \
+#define DECL_STACK_T_NAME(T, StackName) \
+typedef struct StackName StackName; \
+typedef int (*push_fn)(StackName *s, T value); \
+typedef T (*pop_fn)(StackName *s); \
+typedef T (*top_fn)(StackName *s); \
+typedef int (*empty_fn)(StackName *s); \
  \
-typedef struct Name { \
+typedef struct StackName##VTable { \
     push_fn push; \
     pop_fn pop; \
     top_fn  top; \
     empty_fn empty; \
-    void *ctx; \
-} Name; \
+} StackName##VTable; \
+typedef struct StackName { \
+    StackName##VTable *vTable; \
+} StackName; \
 
 #define DECL_STACK_T(T) DECL_STACK_T_NAME(T, T##Stack)
 
-#define STACK_PUSH(stack, value) ((stack)->push((stack)->ctx, (value)))
-#define STACK_POP(stack) ((stack)->pop((stack)->ctx))
-#define STACK_TOP(stack) ((stack)->top((stack)->ctx))
-#define STACK_EMPTY(stack) ((stack)->empty((stack)->ctx))
+#define STACK_PUSH(stack, value) ((stack)->vTable->push((stack), (value)))
+#define STACK_POP(stack) ((stack)->vTable->pop((stack)))
+#define STACK_TOP(stack) ((stack)->vTable->top((stack)))
+#define STACK_EMPTY(stack) ((stack)->vTable->empty((stack)))
 
 _END_EXTERN_C

@@ -1,9 +1,9 @@
 #include "common/rb_tree.h"
 
 typedef struct RbNode {
-    struct RbNode *left;
-    struct RbNode *right;
-    struct RbNode *parent;
+    RbNode *left;
+    RbNode *right;
+    RbNode *parent;
     unsigned char color;
 } RbNode;
 
@@ -21,8 +21,8 @@ typedef struct RbTree {
 } RbTree;
 
 static void left_rotate(void *tree, void *node) {
-    RbTree *t = (RbTree *)tree;
-    RbNode *x = (RbNode *)node;
+    RbTree *t = tree;
+    RbNode *x = node;
     RbNode *y = x->right;
     x->right = y->left;
 
@@ -43,8 +43,8 @@ static void left_rotate(void *tree, void *node) {
 }
 
 static void right_rotate(void *tree, void *node) {
-    RbTree *t = (RbTree *)tree;
-    RbNode *y = (RbNode *)node;
+    RbTree *t = tree;
+    RbNode *y = node;
     RbNode *x = y->left;
     y->left = x->right;
 
@@ -65,8 +65,8 @@ static void right_rotate(void *tree, void *node) {
 }
 
 void rb_insert_fixup_impl(void *tree, void *node) {
-    RbTree *t = (RbTree *)tree;
-    RbNode *z = (RbNode *)node;
+    RbTree *t = tree;
+    RbNode *z = node;
     while (z->parent->color == RB_RED) {
         if (z->parent == z->parent->parent->left) {
             RbNode *y = z->parent->parent->right; // uncle
@@ -189,8 +189,8 @@ static void rb_delete_fixup(RbTree *t, RbNode *x) {
 }
 
 void rb_delete_impl(void *tree, void *node) {
-    RbTree *t = (RbTree *)tree;
-    RbNode *z = (RbNode *)node;
+    RbTree *t = tree;
+    RbNode *z = node;
     RbNode *y = z;
     unsigned char y_original_color = y->color;
     RbNode *x;

@@ -32,10 +32,8 @@ extern const size_t ALIGN_SIZE; // 32
 
 #define BASE(self) (&((self)->base))
 
-
 #if defined(__GNUC__) || defined(__clang__)
-#define container_of(ptr, type, member) \
-__extension__ ({                  \
+#define container_of(ptr, type, member) ({                  \
   const typeof(((type *)0)->member) *__mptr = (ptr);        \
   (type *)((char *)__mptr - offsetof(type, member));        \
 })
@@ -45,8 +43,7 @@ __extension__ ({                  \
 #endif
 
 #if defined(__GNUC__) || defined(__clang__)
-#define container_of_arr(ptr, type, member) \
-__extension__ ({                  \
+#define container_of_arr(ptr, type, member) ({                  \
   const typeof(((type *)0)->member[0]) *__mptr = (ptr);        \
   (type *)((char *)__mptr - offsetof(type, member));        \
 })

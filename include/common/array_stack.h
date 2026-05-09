@@ -10,35 +10,42 @@
 
 _BEGIN_EXTERN_C
 
-#define DECL_ARRAY_STACK_T_NAME(T, Name)                            \
-COMMON_API Name make_##Name(Array *array);                          \
+#define DECL_ARRAY_STACK_T_NAME(T, StackName)                            \
+typedef struct Array##StackName { \
+    StackName base; \
+    Array *array; \
+} Array##StackName; \
+COMMON_API Array##StackName make_Array##StackName(Array *array);                          \
 
 #define DECL_ARRAY_STACK_T(T) DECL_ARRAY_STACK_T_NAME(T, T##Stack)
 
 #define IMPL_ARRAY_STACK_T_NAME(T, StackName, ArrayName)            \
-static int StackName##_push(void *ctx, T value) {                   \
-    return ArrayName##_push((Array *)ctx, value);                   \
+static int StackName##_push(StackName *s, T value) {                   \
+    return ArrayName##_push(container_of(s, Array##StackName, base)->array, value);                   \
 }                                                                   \
                                                                     \
-static T StackName##_pop(void *ctx) {                               \
-    return ArrayName##_pop((Array *)ctx);                           \
+static T StackName##_pop(StackName *s) {                               \
+    return ArrayName##_pop(container_of(s, Array##StackName, base)->array);                           \
 }                                                                   \
                                                                     \
-static T StackName##_top(void *ctx) {                               \
-    return ArrayName##_top((Array *)ctx);                           \
+static T StackName##_top(StackName *s) {                               \
+    return ArrayName##_top(container_of(s, Array##StackName, base)->array);                           \
 }                                                                   \
                                                                     \
-static int StackName##_empty(void *ctx) {                           \
-    return array_len((Array *)ctx) == 0;                            \
+static int StackName##_empty(StackName *s) {                           \
+    return array_len(container_of(s, Array##StackName, base)->array) == 0;                            \
 }                                                                   \
                                                                     \
-StackName make_##StackName(Array *array) {                          \
-    return (StackName){                                             \
-        .push = StackName##_push,                                   \
-        .pop = StackName##_pop,                                     \
-        .top = StackName##_top,                                     \
-        .empty = StackName##_empty,                                 \
-        .ctx = array                                                \
+static StackName##VTable vTable_##StackName = {                     \
+    .push = StackName##_push,                               \
+    .pop = StackName##_pop,                                 \
+    .top = StackName##_top,                                 \
+    .empty = StackName##_empty                              \
+}; \
+Array##StackName make_Array##StackName(Array *array) {                          \
+    return (Array##StackName){                                         \
+        .base={.vTable = &vTable_##StackName},                      \
+        .array = array                                              \
     };                                                              \
 }                                                                   \
 

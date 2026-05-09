@@ -4,29 +4,30 @@
 #include <common/array_stack.h>
 #include "stack.h"
 
-static Allocator allocator;
+static Allocator *_allocator;
 
 // .h
 DECL_ARRAY_T(Struct1);
 DECL_ARRAY_STACK_T(Struct1);
 
-static Array array;
-static Struct1Stack array_stack;
+static ArrayStruct1Stack _array_stack;
+static Struct1Stack *array_stack;
 
 // .c
 #include <common/array_impl.h>
+IMPL_ARRAY_T(Struct1);
+static Array array;
+IMPL_ARRAY_STACK_T(Struct1);
 void setUp(void) {
-    allocator = sys_alloc;
-    array = make_Struct1Array(&allocator, 1024);
-    array_stack = make_Struct1Stack(&array);
+    _allocator = &sys_alloc;
+    array = make_Struct1Array(_allocator, 1024);
+    _array_stack = make_ArrayStruct1Stack(&array);
+    array_stack = (Struct1Stack *)&_array_stack;
 }
 
 void tearDown(void) {
     array_free(&array);
 }
-
-IMPL_ARRAY_T(Struct1);
-IMPL_ARRAY_STACK_T(Struct1);
 
 TEST_FNS(array_)
 

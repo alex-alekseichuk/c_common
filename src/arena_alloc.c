@@ -8,6 +8,9 @@
 #include "common/allocator_impl.h"
 #include "common/arena_alloc.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+
 typedef struct Arena {
     Allocator base;
     uint8_t *buffer;
@@ -115,3 +118,5 @@ size_t arena_mark(Arena *a) {
 void arena_rewind(Arena *a, size_t mark) {
     a->offset = mark;
 }
+
+#pragma GCC diagnostic pop

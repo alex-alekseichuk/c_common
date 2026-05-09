@@ -1,7 +1,7 @@
 #include "common/list.h"
 
 typedef struct ListNode {
-    struct ListNode *next;
+    ListNode *next;
 } ListNode;
 
 typedef struct List {
@@ -21,8 +21,8 @@ void list_free(void *list) {
 }
 
 void list_insert_head(void *list, void *new_node) {
-    List *_list = (List *)list;
-    ListNode *_new_node = (ListNode *)new_node;
+    List *_list = list;
+    ListNode *_new_node = new_node;
     if (_list->tail == NULL) {
         _list->tail = _new_node;
         _new_node->next = _new_node;
@@ -34,9 +34,9 @@ void list_insert_head(void *list, void *new_node) {
 }
 
 void list_append(void *list, void *new_node, void *after_node) {
-    List *_list = (List *)list;
-    ListNode *_new_node = (ListNode *)new_node;
-    ListNode *_after_node = (ListNode *)after_node;
+    List *_list = list;
+    ListNode *_new_node = new_node;
+    ListNode *_after_node = after_node;
 
     if (_list->tail == NULL) {
         _list->tail = _new_node;
@@ -57,7 +57,7 @@ void list_append(void *list, void *new_node, void *after_node) {
 }
 
 void list_free_head(void *list) {
-    List *_list = (List *)list;
+    List *_list = list;
     
     if (_list->tail == NULL) return;
 
@@ -72,7 +72,7 @@ void list_free_head(void *list) {
 }
 
 void list_reverse(void *list) {
-    List *_list = (List *)list;
+    List *_list = list;
 
     if (_list->tail == NULL || _list->tail == _list->tail->next) return;
 

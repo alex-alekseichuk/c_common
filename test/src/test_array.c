@@ -1,5 +1,6 @@
 #include <unity.h>
 #include <stdbool.h>
+#include <common/allocator.h>
 #include <common/arena_alloc.h>
 #include <common/array.h>
 

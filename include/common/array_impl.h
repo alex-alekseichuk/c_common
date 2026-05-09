@@ -6,6 +6,7 @@
  */
 #include <stddef.h>
 #include "common/common.h"
+#include "common/allocator.h"
 #include "common/array.h"
 
 _BEGIN_EXTERN_C
