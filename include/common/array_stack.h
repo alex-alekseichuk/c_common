@@ -4,6 +4,7 @@
  */
 
 #include <stddef.h>
+#include "common/common.h"
 #include "common/array.h"
 #include "common/stack.h"
 

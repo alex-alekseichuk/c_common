@@ -9,21 +9,22 @@
  */
 
 #include <stddef.h>
-#include <stdalign.h>
 #include <stdint.h>
 #include "common/common.h"
 #include "common/allocator.h"
 
 _BEGIN_EXTERN_C
 
-COMMON_API Allocator make_buffer_arena(uint8_t *buffer, size_t size);
+typedef struct Arena Arena;
 
-COMMON_API Allocator make_malloc_arena(size_t size);
-COMMON_API void arena_free(Allocator *alloc);
+COMMON_API Arena *make_buffer_arena(uint8_t *buffer, size_t size);
 
-COMMON_API void arena_reset(Allocator *alloc);
+COMMON_API Arena *make_malloc_arena(size_t size);
+COMMON_API void arena_free(Arena *a);
 
-COMMON_API size_t arena_mark(Allocator *alloc);
-COMMON_API void arena_rewind(Allocator *alloc, size_t mark);
+COMMON_API void arena_reset(Arena *a);
+
+COMMON_API size_t arena_mark(Arena *a);
+COMMON_API void arena_rewind(Arena *a, size_t mark);
 
 _END_EXTERN_C

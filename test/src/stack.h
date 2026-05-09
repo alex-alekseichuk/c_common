@@ -1,3 +1,5 @@
+#pragma once
+
 #include <common/array_stack.h>
 
 //typedef struct Struct1 Struct1;

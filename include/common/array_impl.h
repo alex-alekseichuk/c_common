@@ -5,7 +5,7 @@
  * It's not a part of Array interface.
  */
 #include <stddef.h>
-#include <stdalign.h>
+#include "common/common.h"
 #include "common/array.h"
 
 _BEGIN_EXTERN_C

@@ -16,6 +16,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 file(GLOB SRC
     src/allocator.c
+    src/dummy_alloc.c
     src/sys_alloc.c
     src/arena_alloc.c
     src/array.c

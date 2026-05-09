@@ -1,3 +1,4 @@
+#pragma once
 #include <common/allocator.h>
 
 // Test basic allocation
@@ -18,7 +19,7 @@ void testfn_alloc_zero_n_macro(Allocator *allocator);
 // Test alloc_printf function
 void testfn_alloc_printf(Allocator *allocator);
 
-#define TEST_FN(Prefix, Name) void Prefix##Name(void) { testfn_##Name(&(Prefix##allocator)); }
+#define TEST_FN(Prefix, Name) void Prefix##Name(void) { testfn_##Name(Prefix##allocator); }
 
 #define TEST_FNS(Prefix) \
     TEST_FN(Prefix, alloc_t_macro); \

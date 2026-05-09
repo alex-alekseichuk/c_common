@@ -9,16 +9,16 @@
 typedef struct {
     size_t len;
     size_t size;
-    const Allocator *alloc;
+    Allocator *alloc;
     char data[];
 } str_hdr;
 
 static str_hdr *str__hdr(char *s) {
-    return s ? container_of(s, str_hdr, data) : NULL;
+    return s ? container_of_arr(s, str_hdr, data) : NULL;
 }
 
 static const str_hdr *str__hdr_const(const char *s) {
-    return s ? container_of(s, str_hdr, data) : NULL;
+    return s ? container_of_arr(s, str_hdr, data) : NULL;
 }
 
 static size_t str__grow_size(size_t size, size_t min_needed) {
@@ -41,7 +41,7 @@ static char *str__resize(char *s, size_t new_size) {
     return new_hdr->data;
 }
 
-char *make_str_alloc(const Allocator *a) {
+char *make_str_alloc(Allocator *a) {
     if (!a) a = &sys_alloc;
 
     size_t size = 16;

@@ -1,4 +1,5 @@
 #pragma once
+#include <stdalign.h>
 
 #ifdef __cplusplus
     #define _BEGIN_EXTERN_C extern "C" {
@@ -29,12 +30,27 @@ extern const size_t ALIGN_SIZE; // 32
 
 #define BUFFER(NAME, T, SIZE) alignas(max_align_t) T NAME[(SIZE)]
 
+#define BASE(self) (&((self)->base))
+
+
 #if defined(__GNUC__) || defined(__clang__)
-#define container_of(ptr, type, member) ({                             \
-    const typeof(((type *)0)->member[0]) *__mptr = (ptr);              \
-    (type *)((char *)__mptr - offsetof(type, member));                 \
+#define container_of(ptr, type, member) \
+__extension__ ({                  \
+  const typeof(((type *)0)->member) *__mptr = (ptr);        \
+  (type *)((char *)__mptr - offsetof(type, member));        \
 })
 #else
 #define container_of(ptr, type, member) \
-    (type *)((char *)(ptr) - offsetof(type, member))
+  ((type *)((char *)(ptr) - offsetof(type, member)))
+#endif
+
+#if defined(__GNUC__) || defined(__clang__)
+#define container_of_arr(ptr, type, member) \
+__extension__ ({                  \
+  const typeof(((type *)0)->member[0]) *__mptr = (ptr);        \
+  (type *)((char *)__mptr - offsetof(type, member));        \
+})
+#else
+#define container_of_arr(ptr, type, member) \
+  ((type *)((char *)(ptr) - offsetof(type, member)))
 #endif

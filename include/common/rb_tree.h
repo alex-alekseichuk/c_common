@@ -5,8 +5,8 @@
  */
 
 #include <stddef.h>
-#include "common/allocator.h"
 #include "common/common.h"
+#include "common/allocator.h"
 
 _BEGIN_EXTERN_C
 

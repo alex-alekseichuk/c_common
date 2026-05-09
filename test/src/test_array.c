@@ -3,7 +3,8 @@
 #include <common/arena_alloc.h>
 #include <common/array.h>
 
-static Allocator dynamic_allocator;
+static Arena *dynamic_arena;
+static Allocator *dynamic_allocator;
 
 // .h
 typedef struct Struct1 {
@@ -23,15 +24,16 @@ static Array static_len_array;
 static Array dynamic_array;
 
 void globalSetUp(void) {
-    dynamic_allocator = make_malloc_arena(10240);
+    dynamic_arena = make_malloc_arena(10240);
+    dynamic_allocator = (Allocator *)dynamic_arena;
     static_array = static_Struct1Array(buffer, 10);
     static_len_array = static_Struct1Array_len(buffer, 10, 0);
 }
 void globalTearDown(void) {
-    arena_free(&dynamic_allocator);
+    arena_free(dynamic_arena);
 }
 void setUp(void) {
-    dynamic_array = make_Struct1Array(&dynamic_allocator, 10);
+    dynamic_array = make_Struct1Array(dynamic_allocator, 10);
 }
 
 void tearDown(void) {

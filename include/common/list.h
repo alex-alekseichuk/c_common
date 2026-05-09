@@ -1,13 +1,11 @@
 #pragma once
 /**
  * Circular linked list interface and implementation for a list of type T with allocator.
- * TODO: remove ListNode from DECL_LIST_T macro
- * TODO: refactor append method into insert_tail
  */
 
 #include <stddef.h>
-#include "common/allocator.h"
 #include "common/common.h"
+#include "common/allocator.h"
 
 _BEGIN_EXTERN_C
 

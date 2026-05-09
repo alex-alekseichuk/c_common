@@ -2,10 +2,10 @@
 #include <common/allocator.h>
 #include "allocator.h"
 
-static Allocator malloc_allocator;
+static Allocator *malloc_allocator;
 
 void setUp(void) {
-    malloc_allocator = sys_alloc;
+    malloc_allocator = &sys_alloc;
 }
 
 void tearDown(void) {

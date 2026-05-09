@@ -3,17 +3,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "common/common.h"
 #include "common/allocator.h"
+#include "common/allocator_impl.h"
 #include "common/arena_alloc.h"
 
-typedef struct ArenaCtx {
+typedef struct Arena {
+    Allocator base;
     uint8_t *buffer;
     size_t   size;
     size_t   offset;
-} ArenaCtx;
+} Arena;
 
-static void* _arena_alloc(void *ctx, size_t size) {
-    ArenaCtx *a = (ArenaCtx*)ctx;
+static void* _arena_alloc(Allocator *alloc, size_t size) {
+    Arena *a = container_of(alloc, Arena, base);
 
     size_t real_size = size + SIZE_T;
     real_size = ALIGN(real_size);
@@ -29,13 +32,13 @@ static void* _arena_alloc(void *ctx, size_t size) {
     return ((size_t *)ptr) + 1;
 }
 
-static void* _arena_realloc(void *ctx, void *ptr, size_t size) {
+static void* _arena_realloc(Allocator *a, void *ptr, size_t size) {
     size_t actual_size = *(((size_t *)ptr) - 1);
     if (actual_size >= size) {
         return ptr;
     }
 
-    void *p = _arena_alloc(ctx, size);
+    void *p = _arena_alloc(a, size);
     if (p == NULL) return NULL;
     
     memcpy(p, ptr, actual_size);
@@ -43,74 +46,72 @@ static void* _arena_realloc(void *ctx, void *ptr, size_t size) {
     return p;
 }
 
-static void _arena_free(void *ctx, void *ptr) {
-    (void)ctx;
+static void _arena_free(Allocator *a, void *ptr) {
+    (void)a;
     (void)ptr;
 }
 
-static size_t _arena_sizeof(void *ctx, void *ptr) {
-    (void)ctx;
+static size_t _arena_sizeof(Allocator *a, void *ptr) {
+    (void)a;
     return *(((size_t *)ptr) - 1);
 }
 
-static Allocator _make_arena(ArenaCtx *ctx) {
-    return (Allocator){
-        .alloc = _arena_alloc,
-        .realloc = _arena_realloc,
-        .free = _arena_free,
-        ._sizeof = _arena_sizeof,
-        .ctx = ctx
-    };
+AllocVTable arena_alloc_vTable = {
+    .alloc = _arena_alloc,
+    .realloc = _arena_realloc,
+    .free = _arena_free,
+    ._sizeof = _arena_sizeof,
+};
+
+static void _Arena_init(Arena *ctx) {
+    Allocator_init(&ctx->base, &arena_alloc_vTable);
 }
 
-Allocator make_buffer_arena(uint8_t *buffer, size_t size) {
-    size_t n = ALIGN(sizeof(ArenaCtx));
-    if (n >= size) return (Allocator){0};
+Arena *make_buffer_arena(uint8_t *buffer, size_t size) {
+    size_t n = ALIGN(sizeof(Arena));
+    if (n >= size) return NULL;
 
-    ArenaCtx *a = (void *)buffer;
+    Arena *a = (void *)buffer;
 
     a->buffer = buffer + n;
     a->size = size - n;
     a->offset = 0;
 
-    return _make_arena(a);
+    _Arena_init(a);
+    return a;
 }
 
-Allocator make_malloc_arena(size_t size) {
-    ArenaCtx *a = malloc(sizeof(ArenaCtx));
-    if (!a) return (Allocator){0};
+Arena *make_malloc_arena(size_t size) {
+    Arena *a = malloc(sizeof(Arena));
+    if (!a) return NULL;
 
     a->buffer = malloc(size);
     if (!a->buffer) {
         free(a);
-        return (Allocator){0};
+        return NULL;
     }
 
     a->size = size;
     a->offset = 0;
 
-    return _make_arena(a);
+    _Arena_init(a);
+    return a;
 }
 
-void arena_free(Allocator *alloc) {
-    ArenaCtx *a = (ArenaCtx*)alloc->ctx;
+void arena_free(Arena *a) {
     free(a->buffer);
     free(a);
-    alloc->ctx = NULL;
 }
 
-void arena_reset(Allocator *alloc) {
-    ArenaCtx *a = (ArenaCtx*)alloc->ctx;
+void arena_reset(Arena *a) {
     a->offset = 0;
 }
 
 // Checkpoint / rollback
-size_t arena_mark(Allocator *alloc) {
-    ArenaCtx *a = (ArenaCtx*)alloc->ctx;
+size_t arena_mark(Arena *a) {
     return a->offset;
 }
 
-void arena_rewind(Allocator *alloc, size_t mark) {
-    ArenaCtx *a = (ArenaCtx*)alloc->ctx;
+void arena_rewind(Arena *a, size_t mark) {
     a->offset = mark;
 }

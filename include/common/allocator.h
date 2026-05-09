@@ -4,7 +4,7 @@
  * An entity of the interface can allocate and free memory.
  * It has abstract context implementation.
  * It's used in data structures.
- * Allocatated chunk of memory has size property and the buffer.
+ * Allocated chunk of memory has size property and the buffer.
  * It has implementations:
  *   - sys_alloc instance uses system malloc/free/realloc
  *       - not just the alias for system
@@ -17,37 +17,41 @@
  */
 
 #include <stddef.h>
-#include <stdalign.h>
-#include <string.h>
 #include "common/common.h"
 
 _BEGIN_EXTERN_C
 
-typedef void* (*alloc_fn)(void *ctx, size_t size);
-typedef void* (*realloc_fn)(void *ctx, void *ptr, size_t size);
-typedef void (*free_fn)(void *ctx, void *ptr);
-typedef size_t (*sizeof_fn)(void *ctx, void *ptr);
+typedef struct Allocator Allocator;
+
+typedef void* (*alloc_fn)(Allocator *a, size_t size);
+typedef void* (*realloc_fn)(Allocator *a, void *ptr, size_t size);
+typedef void (*free_fn)(Allocator *a, void *ptr);
+typedef size_t (*sizeof_fn)(Allocator *a, void *ptr);
 
 // allocator interface
-typedef struct Allocator {
+typedef struct AllocVTable {
     alloc_fn alloc;
     realloc_fn realloc;
     free_fn free;
     sizeof_fn _sizeof;
-    void *ctx;
+} AllocVTable;
+
+// base allocator class
+typedef struct Allocator {
+    const AllocVTable *vTable;
 } Allocator;
 
 extern Allocator dummy_alloc;
 extern Allocator sys_alloc;
 
-#define ALLOC(a, size) ((a)->alloc((a)->ctx, (size)))
+#define ALLOC(a, size) ((a)->vTable->alloc((a), (size)))
 
 // allocate a struct
 // Node *n = ALLOC_T(&a, Node);
-#define ALLOC_T(a, T) ((T*)(a)->alloc((a)->ctx, sizeof(T)))
+#define ALLOC_T(a, T) ((T*)(a)->vTable->alloc((a), sizeof(T)))
 
 // allocate an array of n elements
-#define ALLOC_N(a, T, n) ((T*)(a)->alloc((a)->ctx, sizeof(T) * (n)))
+#define ALLOC_N(a, T, n) ((T*)(a)->vTable->alloc((a), sizeof(T) * (n)))
 
 void* alloc_zero(Allocator *a, size_t size);
 
@@ -64,13 +68,13 @@ void* alloc_zero(Allocator *a, size_t size);
 #define ALLOC_ZERO_N(a, T, n) \
     ((T*)alloc_zero((a), sizeof(T) * (n)))
 
-#define REALLOC(a, ptr, size) (a)->realloc((a)->ctx, (ptr), (size))
-#define REALLOC_N(a, ptr, T, n) ((T*)(a)->realloc((a)->ctx, (ptr), sizeof(T) * (n)))
+#define REALLOC(a, ptr, size) (a)->vTable->realloc((a), (ptr), (size))
+#define REALLOC_N(a, ptr, T, n) ((T*)(a)->vTable->realloc((a), (ptr), sizeof(T) * (n)))
 
 // free memory
-#define FREE(a, ptr) (a)->free((a)->ctx, (ptr))
+#define FREE(a, ptr) (a)->vTable->free((a), (ptr))
 
-#define SIZEOF(a, ptr) (a)->_sizeof((a)->ctx, (ptr))
+#define SIZEOF(a, ptr) (a)->vTable->_sizeof((a), (ptr))
 
 // allocate a string and format it
 COMMON_API char* alloc_printf(Allocator *a, const char *fmt, ...);
