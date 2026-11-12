@@ -66,11 +66,7 @@ ctest -C Release
 
 TODO:
 
-- str
-- implemen Stack by Array and List
-- implement DList
 - stream: foreach, map, filter, reduce
-- example: print tree
 - example: calculator, polish-notation
 - example: http server
 - example: http client
