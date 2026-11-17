@@ -3,7 +3,7 @@
  * TODO: tree of objects and their children in game scene w/o allocation.
  */
 
- #include <stddef.h>
+#include <stddef.h>
 #include "common/common.h"
 #include "common/int.h"
 
